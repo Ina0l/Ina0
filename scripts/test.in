@@ -1,0 +1,30 @@
+str: a="POULET !"
+str: prompt="entre un mot: "
+out: prompt
+in: b
+is: c = a!=b
+nb: nombre = 1
+
+while: c
+    out: b
+    out: prompt
+    in: b
+    is: c = a!=b
+    nb: nombre = nombre + 1
+    nb: dix = 10
+    is: done = nombre == dix
+    if: done
+        str: prompt = "ca fait dix essais mec"
+        out: prompt
+        bool: c=False
+    endif
+endwhile
+
+if: done
+    str: prompt="Tu n'as pas trouvé le mot, t'es vraiment nul"
+endif
+bool: done = not done
+if: done
+    str: prompt="tu as trouvé le mot"
+endif
+out: prompt

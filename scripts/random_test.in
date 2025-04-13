@@ -1,0 +1,16 @@
+str: poulet="poulet"
+random: a1
+random: a2
+bool: a = a1 or a2
+nb: b=0
+
+while: a
+    nb: b=b+1
+    out: poulet
+    random: a1
+    random: a2
+    bool: a = a1 or a2
+endwhile
+
+str: prompt = b " poulets affichés"
+out: prompt
