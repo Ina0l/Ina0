@@ -7,7 +7,7 @@ bool: done = False
 
 while: b != "POULET !" and not done
     out: b
-    out: prompt
+    out: "entre un mot: "
     in: b
     nb: nombre = nombre + 1
     bool: done = nombre == 10

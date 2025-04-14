@@ -6,14 +6,14 @@ from readers import nb_reader, str_reader
 
 def get_type(code: str) -> type:
     try:
-       return type(str_reader.str_reader(code, 0))
-    except SyntaxError:
+        return type(nb_reader.nb_reader(code, 0))
+    except:
         try:
-            return type(nb_reader.nb_reader(code, 0))
-        except SyntaxError:
+            return type(bool_reader(code, 0))
+        except:
             try:
-                return type(bool_reader(code, 0))
-            except SyntaxError:
+                return type(str_reader.str_reader(code, 0))
+            except:
                 return type(None)
 
 def parentheses_extractor(code_line: str, line_nb: int) -> Tuple[str, int]:

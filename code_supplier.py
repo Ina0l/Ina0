@@ -12,9 +12,13 @@ if __name__ == "__main__":
     if path is None:
         path = input("path: ")
 
-    if path[-3:] != ".in": raise TypeError("file must be an .in file")
+    if path[-3:] != ".in": path += ".in"
 
-    with open(path, "r", encoding="utf-8") as file:
-        code = file.read().split("\n")
+    try:
+        with open(path, "r", encoding="utf-8") as file:
+            code = file.read().split("\n")
+    except FileNotFoundError:
+        with open("scripts/"+path, "r", encoding="utf-8") as file:
+            code = file.read().split("\n")
 
     code_reader.code_reader(code, 0)
