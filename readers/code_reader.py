@@ -1,7 +1,7 @@
 from typing import List
 from random import random
 
-from errors import syntax_exception, definition_exception
+from errors import syntax_exception, type_exception
 from memory_variables import _nb, _str, _bool, _list, _funct, delete_var, set_var, get_var, delete_other_instance
 from readers import nb_reader, str_reader, bool_reader
 
@@ -111,7 +111,7 @@ def code_reader(code: List[str], start_line: int) -> None:
             if type(content) in (str, list):
                 _nb.update({var_name: len(content)})
                 delete_other_instance(var_name, float)
-            else: raise TypeError("variable " + line.split(",")[0] + " isn't a string or list, at line " + str(line_nb))
+            else: raise type_exception(line.split(",")[0], "string or list", line_nb)
 
         elif action == "random":
             if len(line.split(":")) != 2: raise syntax_exception(line_nb)
@@ -145,7 +145,7 @@ def code_reader(code: List[str], start_line: int) -> None:
             if type(get_var(line.split(",")[0], line_nb)) == list:
                 for obj in line.split(",")[1:]:
                     _list[line.split(",")[0]].remove(get_var(obj, line_nb))
-            else: raise TypeError("variable " + line.split(",")[0] + " isn't a list at line " + str(line_nb))
+            else: raise type_exception(line.split(",")[0], list, line_nb)
 
         elif action == "lget":
             if len(line.split(":")) != 2: raise syntax_exception(line_nb)
@@ -153,7 +153,7 @@ def code_reader(code: List[str], start_line: int) -> None:
             var_name = line.split("=")[0]
             if type(get_var(line.split("=")[1].split(",")[0], line_nb)) == list:
                 list_value = _list[line.split("=")[1].split(",")[0]]
-            else: raise TypeError("variable " + line.split(",")[0] + " isn't a list at line " + str(line_nb))
+            else: raise type_exception(line.split(",")[0], list, line_nb)
             if len(list_value) > nb_reader.nb_reader(line.split("=")[1].split(",")[1], line_nb):
                 value = list_value[nb_reader.nb_reader(line.split("=")[1].split(",")[1], line_nb)]
                 set_var(var_name, value)
@@ -171,7 +171,7 @@ def code_reader(code: List[str], start_line: int) -> None:
                     _nb.update({var_name: get_var(list_var, line_nb).index(get_var(value_var, line_nb))})
                     delete_other_instance(var_name, float)
                 else: raise ValueError(str(get_var(value_var, line_nb)) + " not in list at line "+str(line_nb))
-            else: raise TypeError("variable "+str(list_var)+" isn't a list at line "+str(line_nb))
+            else: raise type_exception(list_var, list, line_nb)
 
         elif action in _funct:
             function = _funct[action]

@@ -1,6 +1,6 @@
 from typing import Tuple, List
 from memory_variables import _bool, _str, _nb, _list
-from errors import syntax_exception, definition_exception
+from errors import syntax_exception, definition_exception, type_exception
 from readers import nb_reader, str_reader
 
 
@@ -77,7 +77,7 @@ def bool_reader(line: str, line_nb: int) -> bool:
         if code_line[0] in _bool: return _bool[code_line[0]]
         elif code_line[0] in ("False", "false"): return False
         elif code_line [0] == ("True", "true"): return True
-        elif code_line[0] in _str or code_line[0] in _nb or code_line[0] in _list: raise TypeError(code_line[0] + " isn't bool type at line_nb "+str(line_nb))
+        elif code_line[0] in _str or code_line[0] in _nb or code_line[0] in _list: raise type_exception(code_line[0], bool, line_nb)
         else: raise definition_exception(code_line[0], line_nb)
     elif len(code_line) > 1:
         if code_line[0] == "not":

@@ -1,4 +1,4 @@
-str: a="POULET !"
+str: a = "POULET !"
 out: "entre un mot: "
 in: b
 bool: c = b != "POULET !"
