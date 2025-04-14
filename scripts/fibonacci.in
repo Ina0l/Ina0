@@ -1,15 +1,13 @@
-nb: a=1
+nb: a = 1
 nb: b = 0
 nb: c = 0
 out: a
 nb: i = 0
 nb: max = 24
-is: condition = i<max
-while: condition
+while: i < max
     nb: c = b
     nb: b = a
     nb: a = c+b
     out: a
-    nb: i=i+1
-    is: condition = i<max
+    nb: i = i + 1
 endwhile

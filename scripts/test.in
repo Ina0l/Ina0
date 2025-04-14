@@ -1,30 +1,24 @@
 str: a="POULET !"
-str: prompt="entre un mot: "
-out: prompt
+out: "entre un mot: "
 in: b
-is: c = a!=b
+bool: c = b != "POULET !"
 nb: nombre = 1
+bool: done = False
 
-while: c
+while: b != "POULET !" and not done
     out: b
     out: prompt
     in: b
-    is: c = a!=b
     nb: nombre = nombre + 1
-    nb: dix = 10
-    is: done = nombre == dix
+    bool: done = nombre == 10
     if: done
-        str: prompt = "ca fait dix essais mec"
-        out: prompt
-        bool: c=False
+        out: "ca fait dix essais mec"
     endif
 endwhile
 
 if: done
-    str: prompt="Tu n'as pas trouvé le mot, t'es vraiment nul"
+    out: "Tu n'as pas trouvé le mot, t'es vraiment nul"
 endif
-bool: done = not done
-if: done
-    str: prompt="tu as trouvé le mot"
+if: not done
+    out: "tu as trouvé le mot"
 endif
-out: prompt

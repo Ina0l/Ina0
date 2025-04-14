@@ -1,13 +1,16 @@
-nb: b=1
-str: c="aaa"
-str: d="zz"
-str: e="z" "z"
+nb: b = 1
+str: c = "aaa"
+str: d = "zz"
+str: e = "z" "z"
 out: e
 
 lmake: a
 ladd: a, b, c, d
 lremove: a, e
 
-len: b=a
+len: b = a
 out: a
 out: b
+
+bool: a = "aaa" == "aa" "a"
+out: a

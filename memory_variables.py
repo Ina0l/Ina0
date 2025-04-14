@@ -31,6 +31,24 @@ def delete_var(var: str) -> None:
     if var in _bool: _bool.pop(var)
     if var in _list: _list.pop(var)
 
+def delete_other_instance(var_name: str, var_type: type) -> None:
+    if var_type in (float, int):
+        if var_name in _str: _str.pop(var_name)
+        if var_name in _bool: _bool.pop(var_name)
+        if var_name in _list: _list.pop(var_name)
+    if var_type == str:
+        if var_name in _nb: _nb.pop(var_name)
+        if var_name in _bool: _bool.pop(var_name)
+        if var_name in _list: _list.pop(var_name)
+    if var_type == bool:
+        if var_name in _str: _str.pop(var_name)
+        if var_name in _nb: _nb.pop(var_name)
+        if var_name in _list: _list.pop(var_name)
+    if var_type == list:
+        if var_name in _str: _str.pop(var_name)
+        if var_name in _bool: _bool.pop(var_name)
+        if var_name in _nb: _nb.pop(var_name)
+
 def set_var(var_name: str, value: Union[float, str, bool, list]) -> None:
     if type(value) == float: _nb.update({var_name: value})
     if type(value) == str: _str.update({var_name: value})
