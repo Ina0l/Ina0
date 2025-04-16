@@ -16,10 +16,12 @@ def code_reader(code: List[str], start_line: int) -> None:
     funct_def = ""
 
     for line in code:
+
+        if "//" in line:
+            line = line.split("//")[0]
+
         line_nb += 1
         action = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[0]])))
-
-        if action[0:2] == "//": continue
 
         if action == "enddef":
             funct_def = ""
