@@ -19,6 +19,8 @@ def code_reader(code: List[str], start_line: int) -> None:
         line_nb += 1
         action = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[0]])))
 
+        if action[0:2] == "//": continue
+
         if action == "enddef":
             funct_def = ""
 
@@ -72,13 +74,6 @@ def code_reader(code: List[str], start_line: int) -> None:
             content = "=".join(line.split("=")[1:])
             _bool.update({var_name: bool_reader.bool_reader(content, line_nb)})
             delete_other_instance(var_name, bool)
-
-        #elif action == "is":
-        #    if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-        #    var_name = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[1]]))).split("=")[0]
-        #    content = "=".join(line.split("=")[1:])
-        #    delete_var(var_name)
-        #    _bool.update({var_name: bool_reader.check_reader(content, line_nb)})
 
         elif action == "if":
             if not bool_reader.bool_reader(line.split(":")[1], line_nb): skip += 1

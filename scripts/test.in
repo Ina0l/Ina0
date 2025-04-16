@@ -1,4 +1,5 @@
-str: a = "POULET !"
+// make sure you put spaces between each symbols (otherwise it could sometimes cause an error)
+
 out: "entre un mot: "
 in: b
 bool: c = b != "POULET !"
