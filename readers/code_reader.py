@@ -32,26 +32,33 @@ def code_reader(code: List[str], start_line: int) -> None:
             continue
 
         if action == "endif":
-            skip = (skip - 1 if skip != 0 else 0)
-            if opened_if == 0: raise syntax_exception(line_nb)
-            opened_if -= 1
-
-        if action == "if": opened_if += 1
-
-        if skip > 0: continue
+            if not opened_while > 0:
+                skip = (skip - 1 if skip != 0 else 0)
+                if opened_if == 0: raise syntax_exception(line_nb)
+                opened_if -= 1
 
         if action == "endwhile":
-            if opened_while == 0: raise syntax_exception(line_nb)
-            opened_while -= 1
-            if opened_while == 0:
-                while bool_reader.bool_reader(condition, line_nb):
-                    code_reader(while_loop_code[1:], line_nb - len(while_loop_code))
+            if not skip > 0:
+                if opened_while == 0: raise syntax_exception(line_nb)
+                opened_while -= 1
+                if opened_while == 0:
+                    while bool_reader.bool_reader(condition, line_nb):
+                        code_reader(while_loop_code[1:], line_nb - len(while_loop_code))
+                    while_loop_code = []
+
+        if action == "if":
+            if not opened_while > 0:
+                opened_if += 1
+                if not bool_reader.bool_reader(line.split(":")[1], line_nb): skip += 1
 
         if action == "while":
-            if opened_while == 0:
-                condition = line.split(":")[1]
-                bool_reader.bool_reader(condition, line_nb)
-            opened_while += 1
+            if not skip > 0:
+                if opened_while == 0:
+                    condition = line.split(":")[1]
+                    bool_reader.bool_reader(condition, line_nb)
+                opened_while += 1
+
+        if skip > 0: continue
 
         if opened_while > 0:
             while_loop_code.append(line)
@@ -77,8 +84,7 @@ def code_reader(code: List[str], start_line: int) -> None:
             _bool.update({var_name: bool_reader.bool_reader(content, line_nb)})
             delete_other_instance(var_name, bool)
 
-        elif action == "if":
-            if not bool_reader.bool_reader(line.split(":")[1], line_nb): skip += 1
+        elif action == "if": pass
 
         elif action == "endif": pass
 

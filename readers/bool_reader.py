@@ -76,7 +76,7 @@ def bool_reader(line: str, line_nb: int) -> bool:
     elif len(code_line) == 1:
         if code_line[0] in _bool: return _bool[code_line[0]]
         elif code_line[0] in ("False", "false"): return False
-        elif code_line [0] == ("True", "true"): return True
+        elif code_line [0] in ("True", "true"): return True
         elif code_line[0] in _str or code_line[0] in _nb or code_line[0] in _list: raise type_exception(code_line[0], bool, line_nb)
         else: raise definition_exception(code_line[0], line_nb)
     elif len(code_line) > 1:

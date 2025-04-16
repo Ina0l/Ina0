@@ -31,7 +31,7 @@ def nb_reader(code_line: str, line: int) -> int:
     nb = 0
     for char in code_line:
         if not (char.isdigit() or char=="."):
-            if char in ["+", "-", "*", "/", "^"]:
+            if char in ("+", "-", "*", "/", "^", "%"):
                 if operation == "+":
                     nb += memory_variables.to_float(number, line)
                     operation = ""
@@ -47,6 +47,8 @@ def nb_reader(code_line: str, line: int) -> int:
                 elif operation == "^":
                     nb **= memory_variables.to_float(number, line)
                     operation = ""
+                elif operation == "%":
+                    nb %= memory_variables.to_float(number, line)
                 else:
                     nb = memory_variables.to_float(number, line)
                     operation = char
@@ -60,6 +62,7 @@ def nb_reader(code_line: str, line: int) -> int:
     elif operation == "*": nb *= memory_variables.to_float(number, line)
     elif operation == "/": nb /= memory_variables.to_float(number, line)
     elif operation == "^": nb **= memory_variables.to_float(number, line)
+    elif operation == "%": nb %= memory_variables.to_float(number, line)
     elif operation == "": nb = memory_variables.to_float(number, line)
     else: raise syntax_exception(line)
     return nb

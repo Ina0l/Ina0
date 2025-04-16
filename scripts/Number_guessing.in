@@ -1,0 +1,45 @@
+// Random number guessing game
+
+out: "Number Guessing Game ! Guees the number between 1 and 100."
+
+// Generate a random number between 1 and 100
+nb: number_to_guess = 0
+nb: bit = 1
+
+// Generate a random number by adding random boolean values multiplied by powers of 2
+while: bit <= 10
+    random: random_bit
+    if: random_bit
+        nb: number_to_guess = number_to_guess + (2 ^ bit)
+    endif
+    nb: bit = bit + 1
+endwhile
+
+// Ensure the number is within the range 1-100
+nb: number_to_guess = number_to_guess % 100 + 1
+out: number_to_guess
+
+// Start the guessing game
+out: "Make your first guess: "
+in: guess
+nb: guess = guess
+nb: attempts = 0
+bool: guessed_correctly = False
+
+while: not guessed_correctly
+    nb: attempts = attempts + 1
+    bool: guessed_correctly = guess == number_to_guess
+    if: guessed_correctly
+        out: "Congrats ! You guessed the number in " attempts " tries."
+    endif
+    if: not guessed_correctly
+        if: guess < number_to_guess
+            out: "Too small, try again: "
+        endif
+        if: guess > number_to_guess
+            out: "Too big, try again: "
+        endif
+        in: guess
+        nb: guess = guess
+    endif
+endwhile

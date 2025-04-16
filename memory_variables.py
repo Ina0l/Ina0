@@ -1,5 +1,5 @@
 from typing import Dict, List, Tuple, Union
-from errors import definition_exception
+from errors import definition_exception, type_exception
 
 _nb: Dict[str, float] = {}
 _str: Dict[str, str] = {}
@@ -12,13 +12,15 @@ def to_float(string: str, line: int) -> float:
         return float(string)
     except ValueError:
         try:
-            return _nb[string]
-        except KeyError:
+            return float(get_var(string, line))
+        except NameError:
             raise definition_exception(string, line)
+        except ValueError:
+            raise type_exception(string, float, line)
 
 def get_var(string: str, line: int) -> Union[float, str, bool, list]:
-    if string == "true": return True
-    elif string == "false": return False
+    if string in ("True", "true"): return True
+    elif string == ("False", "false"): return False
     elif string in _str: return _str[string]
     elif string in _nb: return _nb[string]
     elif string in _bool: return _bool[string]
