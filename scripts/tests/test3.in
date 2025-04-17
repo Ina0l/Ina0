@@ -1,0 +1,12 @@
+// Test string concatenation (made without the '+' sign here)
+str: greeting = "Hello" " " "World"
+out: greeting // Expect "Hello World"
+
+// Test string with variables
+str: name = "User"
+str: message = "Hello, " name
+out: message // Expect "Hello, User"
+
+// Test unclosed quote
+// This should raise a syntax error
+// str: invalid_string = "Hello

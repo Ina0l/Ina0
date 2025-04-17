@@ -1,0 +1,57 @@
+// Test numeric comparisons
+nb: a = 5
+nb: b = 10
+nb: c = 5
+
+if: a < b
+    out: "a is less than b" // Expect this to pass
+endif
+
+if: b > a
+    out: "b is greater than a" // Expect this to pass
+endif
+
+if: a == c
+    out: "a is equal to c" // Expect this to pass
+endif
+
+if: a != b
+    out: "a is not equal to b" // Expect this to pass
+endif
+
+if: b >= c
+    out: "b is greater than or equal to c" // Expect this to pass
+endif
+
+if: a <= c
+    out: "a is less than or equal to c" // Expect this to pass
+endif
+
+// Test string comparisons
+str: str1 = "hello"
+str: str2 = "world"
+str: str3 = "hello"
+
+if: str1 == str3
+    out: "str1 is equal to str3" // Expect this to pass
+endif
+
+if: str1 != str2
+    out: "str1 is not equal to str2" // Expect this to pass
+endif
+
+// Test boolean comparisons
+bool: bool1 = True
+bool: bool2 = False
+
+if: bool1 == True
+    out: "bool1 is True" // Expect this to pass
+endif
+
+if: bool2 == False
+    out: "bool2 is False" // Expect this to pass
+endif
+
+if: bool1 != bool2
+    out: "bool1 is not equal to bool2" // Expect this to pass
+endif

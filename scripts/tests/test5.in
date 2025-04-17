@@ -1,0 +1,42 @@
+// Test intricate conditions
+nb: a = 5
+nb: b = 10
+nb: c = 15
+
+if: (a < b and b < c) or (a == 5 and c == 15)
+    out: "Condition 1 Passed" // Expect this to pass
+endif
+
+if: (a > b or b > c) and not (a == 5)
+    out: "Condition 2 Passed" // Expect this to fail
+endif
+
+// Test nested conditions inside loops
+nb: counter = 0
+nb: sum = 0
+
+while: counter < 10
+    if: counter % 2 == 0
+        out: counter + " is even"
+        nb: sum = sum + counter
+    endif
+    if: counter % 2 != 0
+        out: counter + " is odd"
+    endif
+    nb: counter = counter + 1
+endwhile
+
+out: "Sum of even numbers: " + sum // Expect 2 + 4 + 6 + 8 = 20
+
+// Test nested while loops
+nb: x = 0
+nb: y = 0
+
+while: x < 3
+    nb: y = 0
+    while: y < 3
+        out: "x=" + x + " y=" + y
+        nb: y = y + 1
+    endwhile
+    nb: x = x + 1
+endwhile

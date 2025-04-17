@@ -1,0 +1,16 @@
+// Test boolean operations
+bool: result1 = True or False
+out: result1 // Expect True
+
+bool: result2 = True and False
+out: result2 // Expect False
+
+bool: result3 = not True
+out: result3 // Expect False
+
+bool: result4 = True xor False
+out: result4 // Expect True
+
+// Test nested boolean expressions
+bool: result5 = (True and (False or True)) and not False
+out: result5 // Expect True

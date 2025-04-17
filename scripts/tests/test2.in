@@ -1,0 +1,23 @@
+// Test variable assignment
+nb: x = 5
+str: y = "Hello"
+bool: z = True
+out: x
+out: y
+out: z
+
+// Test if-else condition
+if: x > 3
+    out: "x is greater than 3"
+endif
+
+if: x < 3
+    out: "x is less than 3"
+endif
+
+// Test while loop
+nb: counter = 0
+while: counter < 5
+    out: counter
+    nb: counter = counter + 1
+endwhile
