@@ -10,3 +10,5 @@ out: message // Expect "Hello, User"
 // Test unclosed quote
 // This should raise a syntax error
 // str: invalid_string = "Hello
+
+// I tested it and it works
