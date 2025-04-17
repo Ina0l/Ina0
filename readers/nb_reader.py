@@ -22,9 +22,10 @@ def parentheses_extractor(code_line: str, line: int) -> Tuple[str, int]:
 
 def nb_reader(code_line: str, line: int) -> int:
     while "(" in code_line:
+        parentheses_extractor_output = parentheses_extractor(code_line, line)
         code_line = (code_line[:code_line.index("(")] +
-                     str(nb_reader(parentheses_extractor(code_line, line)[0], line)) +
-                     code_line[parentheses_extractor(code_line, line)[1]+1:])
+                     str(nb_reader(parentheses_extractor_output[0], line)) +
+                     code_line[parentheses_extractor_output[1]+1:])
 
     number = ""
     operation = ""
@@ -34,25 +35,20 @@ def nb_reader(code_line: str, line: int) -> int:
             if char in ("+", "-", "*", "/", "^", "%"):
                 if operation == "+":
                     nb += memory_variables.to_float(number, line)
-                    operation = ""
                 elif operation == "-":
                     nb -= memory_variables.to_float(number, line)
-                    operation = ""
                 elif operation == "*":
                     nb *= memory_variables.to_float(number, line)
-                    operation = ""
                 elif operation == "/":
                     nb /= memory_variables.to_float(number, line)
-                    operation = ""
                 elif operation == "^":
                     nb **= memory_variables.to_float(number, line)
-                    operation = ""
                 elif operation == "%":
                     nb %= memory_variables.to_float(number, line)
                 else:
                     nb = memory_variables.to_float(number, line)
-                    operation = char
-                    number = ""
+                operation = char
+                number = ""
             else:
                 number += char
         else:
