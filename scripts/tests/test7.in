@@ -1,0 +1,31 @@
+// List Testing Script
+
+// Create a new list
+lmake: test_list
+
+lmake: test_list_2
+ladd: test_list_2 <- test_list, "aaa"
+
+// Add items to the list
+ladd: test_list <- "item1", "item2", "item3"
+
+// Output the list to check the current state
+out: test_list
+out: test_list_2
+
+// Remove an item from the list
+lremove: test_list <- "item2"
+
+// Output the modified list
+out: test_list
+
+// Get the length of the list
+len: test_length = test_list
+out: test_length
+
+// Test if a particular item exists in the list
+bool: item_exists = "item1" in test_list
+out: item_exists
+
+lget: item = test_list <- 0
+out: item

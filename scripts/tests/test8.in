@@ -1,0 +1,35 @@
+// Function Testing Script
+
+def: function <- a, b // Defining a function that takes two parameters
+    nb: a = a + 1
+    nb: b = b + 1
+    return: a * b
+enddef
+
+nb: a = 4
+
+function: c <- 6, 5 // calling the function with a=6 and b=5
+out: c
+function: c <- c, 1
+out: c
+
+out: a // check if parameter value is still the same outside of the function
+out
+
+
+// Define a recursive function to calculate the factorial of a number
+def: factorial <- n
+    if: n == 1
+        nb: result = 1
+    endif
+    if: n != 1
+        factorial: a <- n - 1
+        nb: result = n * a
+    endif
+    return: result
+enddef
+
+// Call the recursive factorial function
+factorial: a <- 5
+out: "factorial:"
+out: a // should be 120 as 5! = 120
