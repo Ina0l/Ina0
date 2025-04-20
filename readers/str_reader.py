@@ -24,5 +24,6 @@ def str_reader(code_line: str, line: int) -> str:
         if word[0]=="\"": code+=word[1:-1]
         else:
             for member in word.split(" "):
-                if member!="": code += str(get_var(member, line))
+                if member!="":
+                    code += str(get_var(member, line))
     return code

@@ -5,7 +5,7 @@ _nb: Dict[str, float] = {}
 _str: Dict[str, str] = {}
 _bool: Dict[str, bool] = {}
 _list: Dict[str, list] = {}
-_funct: Dict[str, Tuple[List[str], int]] = {}
+_funct: Dict[str, Tuple[List[str], Tuple[str], int]] = {}
 
 def to_float(string: str, line: int) -> float:
     try:
@@ -58,17 +58,51 @@ def set_var(var_name: str, value: Union[float, str, bool, list]) -> None:
     if type(value) == list: _list.update({var_name: value})
 
 def get_type(code: str, line: int) -> type:
-    if "\"" in code:
-        return str
-    elif " or " in code or " nor " in code or " and " in code or " nand " in code or " xor " in code or " nxor " in code:
-        return bool
+    if " or " in code or " nor " in code or " and " in code or " nand " in code or " xor " in code or " nxor " in code or "not " in code:
+        for operator in (" or ", " nor ", " and ", " nand ", " xor ", " nxor ", "not "):
+            if operator in code:
+                indexes = get_indexes(code, operator) + get_indexes(code, "\"")
+                indexes.sort()
+                quote_opened = False
+                for index in indexes:
+                    if index in get_indexes(code, operator):
+                        if not quote_opened: return bool
+                    elif index in get_indexes(code, "\""):
+                        quote_opened = False if quote_opened else False
     elif " == " in code or " != " in code or " <= " in code or " >= " in code or " < " in code or " > " in code:
-        return bool
+        for operator in (" == ", " != ", " <=> ", " >= ", " < ", " > "):
+            if operator in code:
+                indexes = get_indexes(code, operator) + get_indexes(code, "\"")
+                indexes.sort()
+                quote_opened = False
+                for index in indexes:
+                    if index in get_indexes(code, operator):
+                        if not quote_opened: return bool
+                    elif index in get_indexes(code, "\""):
+                        quote_opened = False if quote_opened else False
+    elif "\"" in code: return str
     else:
-        instructions = code.split(" ")
-        if "+" in instructions or "-" in instructions or "*" in instructions or "/" in instructions or "^" in instructions or "%" in instructions:
+        if "+" in code or "-" in code or "*" in code or "/" in code or "^" in code or "%" in code:
             return float
-        elif len(instructions) > 1:
+        elif len(code.split()) > 1:
             return str
-        elif len(instructions) == 0: raise syntax_exception(line)
-        else: return type(get_var(code, line))
+        elif code == "": raise syntax_exception(line)
+        elif code[0].isdigit(): return float
+        else: return type(get_var(no_space(code), line))
+
+def get_indexes(string: str, sub: str) -> List[int]:
+    if string.count(sub) == 0: raise ValueError(f"'{sub}' is not in list")
+    indexes = []
+    if string.index(sub) == 0: indexes.append(0)
+    if string.rindex(sub) == len(string) - len(sub) - 1: indexes.append(len(string) - len(sub) - 1)
+    index = 0
+    for substring in string.split(sub):
+        index += len(substring)
+        indexes.append(index)
+        index += len(sub)
+    indexes = indexes[:-1]
+    indexes.sort()
+    return indexes
+
+def no_space(string: str) -> str:
+    return "".join(string.split())

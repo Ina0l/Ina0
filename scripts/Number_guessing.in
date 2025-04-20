@@ -21,7 +21,7 @@ out: number_to_guess
 
 // Start the guessing game
 out: "Make your first guess: "
-in: guess
+input: guess
 nb: guess = guess
 nb: attempts = 0
 bool: guessed_correctly = False
@@ -39,7 +39,7 @@ while: not guessed_correctly
         if: guess > number_to_guess
             out: "Too big, try again: "
         endif
-        in: guess
+        input: guess
         nb: guess = guess
     endif
 endwhile

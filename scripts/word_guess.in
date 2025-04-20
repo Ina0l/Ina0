@@ -1,7 +1,7 @@
 // make sure you put spaces between each symbols (otherwise it could sometimes cause an error)
 
 out: "entre un mot: "
-in: b
+input: b
 bool: c = b != "POULET !"
 nb: nombre = 1
 bool: done = False
@@ -9,7 +9,7 @@ bool: done = False
 while: b != "POULET !" and not done
     out: b
     out: "entre un mot: "
-    in: b
+    input: b
     nb: nombre = nombre + 1
     bool: done = nombre == 10
     if: done

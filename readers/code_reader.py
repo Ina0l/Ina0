@@ -1,12 +1,14 @@
-from typing import List
+from typing import List, Union
 from random import random
+from math import floor
 
-from errors import syntax_exception, type_exception
-from memory_variables import _nb, _str, _bool, _list, _funct, delete_var, set_var, get_var, delete_other_instance
+from errors import syntax_exception, type_exception, definition_exception
+from memory_variables import _nb, _str, _bool, _list, _funct, delete_var, set_var, get_var, delete_other_instance, \
+    get_type, no_space
 from readers import nb_reader, str_reader, bool_reader
 
 
-def code_reader(code: List[str], start_line: int) -> None:
+def code_reader(code: List[str], start_line: int) -> Union[float, str, bool, list, None]:
     skip = 0
     opened_if = 0
     opened_while = 0
@@ -21,7 +23,7 @@ def code_reader(code: List[str], start_line: int) -> None:
             line = line.split("//")[0]
 
         line_nb += 1
-        action = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[0]])))
+        action = no_space(line.split(":")[0])
 
         if action == "enddef":
             funct_def = ""
@@ -66,20 +68,20 @@ def code_reader(code: List[str], start_line: int) -> None:
 
         if action == "nb":
             if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            line = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[1]])))
+            line = no_space(line.split(":")[1])
             var_name = line.split("=")[0]
             content = "=".join(line.split("=")[1:])
             _nb.update({var_name: nb_reader.nb_reader(content, line_nb)})
             delete_other_instance(var_name, float)
 
         elif action == "str":
-            var_name = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[1]]))).split("=")[0]
+            var_name = no_space(":".join(line.split(":")[1:])).split("=")[0]
             content = "=".join(line.split("=")[1:])
             _str.update({var_name: str_reader.str_reader(content, line_nb)})
             delete_other_instance(var_name, str)
 
         elif action == "bool":
-            var_name = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[1]]))).split("=")[0]
+            var_name = no_space(":".join(line.split(":")[1:])).split("=")[0]
             content = "=".join(line.split("=")[1:])
             _bool.update({var_name: bool_reader.bool_reader(content, line_nb)})
             delete_other_instance(var_name, bool)
@@ -94,14 +96,31 @@ def code_reader(code: List[str], start_line: int) -> None:
 
         elif action == "def":
             if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            funct_def = "".join(filter(lambda x: x != " ", [a for a in line.split(":")[1]]))
-            _funct.update({funct_def: ([], line_nb)})
+            if len(line.split("<-")) > 2: raise syntax_exception(line_nb)
+            funct_def = no_space(line.split(":")[1].split("<-")[0])
+            if "<-" in line:
+                funct_parameters = tuple(no_space(a) for a in line.split("<-")[-1].split(","))
+            else: funct_parameters = ()
+            _funct.update({funct_def: ([], funct_parameters, line_nb)})
 
         elif action == "enddef": pass
 
-        elif action == "in":
+        elif action == "return":
+            if start_line == 0: raise syntax_exception(line_nb)
+            code = ":".join(line.split(":")[1:])
+            if get_type(code, line_nb) == float:
+                return nb_reader.nb_reader(no_space(code), line_nb)
+            elif get_type(code, line_nb) == str:
+                return str_reader.str_reader(code, line_nb)
+            elif get_type(code, line_nb) == bool:
+                return bool_reader.bool_reader(code, line_nb)
+            elif get_type(code, line_nb) == list:
+                return get_var(code, line_nb)
+            else: raise definition_exception(code, line_nb)
+
+        elif action == "input":
             if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            var_name = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[1]])))
+            var_name = no_space(line.split(":")[1])
             content = input()
             if var_name != "":
                 delete_var(var_name)
@@ -109,56 +128,83 @@ def code_reader(code: List[str], start_line: int) -> None:
 
         elif action == "len":
             if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            var_name = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[1]]))).split("=")[0]
-            content = get_var("".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[1]]))).split("=")[1], line_nb)
-            if type(content) in (str, list):
-                _nb.update({var_name: len(content)})
+            var_name = no_space(":".join(line.split(":")[1:])).split("=")[0]
+            content = no_space(":".join(line.split(":")[1:])).split("=")[1]
+            if get_type(content, line_nb) == str:
+                _nb.update({var_name: len(str_reader.str_reader(content, line_nb))})
+                delete_other_instance(var_name, float)
+            elif get_type(content, line_nb) == list:
+                _nb.update({var_name: len(get_var(content, line_nb))})
                 delete_other_instance(var_name, float)
             else: raise type_exception(line.split(",")[0], "string or list", line_nb)
 
         elif action == "random":
             if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            var_name = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[1]])))
+            var_name = no_space(line.split(":")[1])
             delete_var(var_name)
             _bool.update({var_name: random() > 0.5})
 
         elif action == "out":
-            print(str_reader.str_reader("".join(line.split(":")[1:]), line_nb))
+            print(str_reader.str_reader(":".join(line.split(":")[1:]), line_nb))
 
         elif action == "del":
             if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            line = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[1]])))
-            delete_var(line)
+            for var_name in no_space(line.split(":")[1]).split(","):
+                delete_var(var_name)
 
         elif action == "lmake":
             if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            line = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[1]])))
+            line = no_space(line.split(":")[1])
             delete_var(line)
             _list.update({line: []})
 
         elif action == "ladd":
             if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            line = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[1]])))
-            for obj in line.split(",")[1:]:
-                _list[line.split(",")[0]].append(get_var(obj, line_nb))
+            if len(line.split("<-")) < 2: raise syntax_exception(line_nb)
+            line = ":".join(line.split(":")[1:])
+            if get_type(line.split("<-")[0], line_nb) != list:
+                raise type_exception(no_space(line.split("<-")[0]), list, line_nb)
+            for obj in "<-".join(line.split("<-")[1:]).split(","):
+                if get_type(obj, line_nb) == float:
+                    value = nb_reader.nb_reader(no_space(obj), line_nb)
+                elif get_type(obj, line_nb) == str:
+                    value = str_reader.str_reader(obj, line_nb)
+                elif get_type(obj, line_nb) == bool:
+                    value = bool_reader.bool_reader(no_space(obj), line_nb)
+                elif get_type(obj, line_nb) == list:
+                    value = get_var(no_space(obj), line_nb)
+                else: raise definition_exception(obj, line_nb)
+                _list[no_space(line.split("<-")[0])].append(value)
 
         elif action == "lremove":
             if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            line = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[1]])))
-            if type(get_var(line.split(",")[0], line_nb)) == list:
-                for obj in line.split(",")[1:]:
-                    _list[line.split(",")[0]].remove(get_var(obj, line_nb))
-            else: raise type_exception(line.split(",")[0], list, line_nb)
+            if len(line.split("<-")) < 2: raise syntax_exception(line_nb)
+            line = ":".join(line.split(":")[1:])
+            if get_type(line.split("<-")[0], line_nb) != list:
+                raise type_exception(no_space(line.split("<-")[0]), list, line_nb)
+            for obj in "<-".join(line.split("<-")[1:]).split(","):
+                if get_type("".join(filter(lambda x: x!=" ", [a for a in obj])), line_nb) == float:
+                    value = nb_reader.nb_reader(no_space(obj), line_nb)
+                elif get_type(obj, line_nb) == str:
+                    value = str_reader.str_reader(obj, line_nb)
+                elif get_type(obj, line_nb) == bool:
+                    value = bool_reader.bool_reader(no_space(obj), line_nb)
+                elif get_type(obj, line_nb) == list:
+                    value = get_var(no_space(obj), line_nb)
+                else: raise definition_exception(obj, line_nb)
+                if value in _list[no_space(line.split("<-")[0])]:
+                    _list[no_space(line.split("<-")[0])].remove(value)
+                else: raise ValueError(no_space(line.split("<-")[0]) + " not in list at line "+str(line_nb))
 
         elif action == "lget":
             if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            line = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[1]])))
+            line = no_space(line.split(":")[1])
             var_name = line.split("=")[0]
-            if type(get_var(line.split("=")[1].split(",")[0], line_nb)) == list:
-                list_value = _list[line.split("=")[1].split(",")[0]]
-            else: raise type_exception(line.split(",")[0], list, line_nb)
-            if len(list_value) > nb_reader.nb_reader(line.split("=")[1].split(",")[1], line_nb):
-                value = list_value[nb_reader.nb_reader(line.split("=")[1].split(",")[1], line_nb)]
+            if type(get_var(line.split("=")[1].split("<-")[0], line_nb)) == list:
+                list_value = _list[line.split("=")[1].split("<-")[0]]
+            else: raise type_exception(line.split("<-")[0], list, line_nb)
+            if len(list_value) > nb_reader.nb_reader(line.split("=")[1].split("<-")[1], line_nb):
+                value = list_value[floor(nb_reader.nb_reader(line.split("=")[1].split("<-")[1], line_nb))]
                 set_var(var_name, value)
                 delete_other_instance(var_name, type(value))
             else: raise IndexError("index out of range at line "+str(line_nb))
@@ -170,15 +216,55 @@ def code_reader(code: List[str], start_line: int) -> None:
             list_var = line.split("=")[1].split(",")[0]
             value_var = line.split("=")[1].split(",")[1]
             if type(get_var(list_var, line_nb)) == list:
-                if get_var(value_var, line_nb) in get_var(list_var, line_nb):
-                    _nb.update({var_name: get_var(list_var, line_nb).index(get_var(value_var, line_nb))})
+                value = None
+                if get_type(value_var, line_nb) == float:
+                    value = nb_reader.nb_reader(value_var, line_nb)
+                elif get_type(value_var, line_nb) == str:
+                    value = str_reader.str_reader(value_var, line_nb)
+                elif get_type(value_var, line_nb) == bool:
+                    value = bool_reader.bool_reader(value_var, line_nb)
+                elif get_type(value_var, line_nb) == list:
+                    value = get_var(value_var, line_nb)
+                if value in get_var(list_var, line_nb):
+                    _nb.update({var_name: get_var(list_var, line_nb).index(value)})
                     delete_other_instance(var_name, float)
                 else: raise ValueError(str(get_var(value_var, line_nb)) + " not in list at line "+str(line_nb))
             else: raise type_exception(list_var, list, line_nb)
 
         elif action in _funct:
+            if ":" in line:
+                var_name = no_space(line.split(":")[1].split("<-")[0])
+                params_values = "".join(line.split("<-")[1:]).split(",")
+            else: params_values, var_name = [], None
             function = _funct[action]
-            code_reader(function[0], function[1])
+            if len(params_values) != len(function[1]): raise syntax_exception(line_nb)
+            outside_params = {}
+            for param_index in range(len(function[1])):
+                try:
+                    outside_params.update({function[1][param_index]: get_var(function[1][param_index], line_nb)})
+                except NameError: pass
+                if get_type(no_space(params_values[param_index]), line_nb) == float:
+                    _nb.update({function[1][param_index]: nb_reader.nb_reader(no_space(params_values[param_index]), line_nb)})
+                    delete_other_instance(function[1][param_index], float)
+                elif get_type(params_values[param_index], line_nb) == str:
+                    _str.update({function[1][param_index]: str_reader.str_reader(params_values[param_index], line_nb)})
+                    delete_other_instance(function[1][param_index], str)
+                elif get_type(params_values[param_index], line_nb) == bool:
+                    _bool.update({function[1][param_index]: bool_reader.bool_reader(params_values[param_index], line_nb)})
+                    delete_other_instance(function[1][param_index], bool)
+                elif get_type(params_values[param_index], line_nb) == list:
+                    _list.update({function[1][param_index]: get_var(params_values[param_index], line_nb)})
+                    delete_other_instance(function[1][param_index], list)
+
+            value = code_reader(function[0], function[2])
+
+            for param_index in range(len(function[1])):
+                if function[1][param_index] in outside_params:
+                    delete_var(function[1][param_index])
+                    set_var(function[1][param_index], outside_params[function[1][param_index]])
+            if not value is None:
+                if not ":" in line: raise syntax_exception(line_nb)
+                set_var(var_name, value)
 
         elif action == "" and not ":" in line: pass
         else: raise NameError("action " + action + " unknown")
