@@ -29,3 +29,6 @@ out: item_exists
 
 lget: item = test_list <- 0
 out: item
+
+lindex: index = test_list <- "item1"
+out: index

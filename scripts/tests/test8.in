@@ -14,6 +14,9 @@ function: c <- c, 1
 out: c
 
 out: a // check if parameter value is still the same outside of the function
+// Check if internally defined variables aren't defined outside of the function
+// Should throw an error
+// out: b
 out
 
 
@@ -29,7 +32,8 @@ def: factorial <- n
     return: result
 enddef
 
+nb: n = 6
 // Call the recursive factorial function
-factorial: a <- 5
-out: "factorial:"
-out: a // should be 120 as 5! = 120
+factorial: a <- n
+out: "factorial of " n
+out: a // should be 720 as 6!=720

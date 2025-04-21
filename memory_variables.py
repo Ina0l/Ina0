@@ -19,7 +19,8 @@ def to_float(string: str, line: int) -> float:
             raise type_exception(string, float, line)
 
 def get_var(string: str, line: int) -> Union[float, str, bool, list]:
-    if string in ("True", "true"): return True
+    if string == "": raise syntax_exception(line)
+    elif string in ("True", "true"): return True
     elif string == ("False", "false"): return False
     elif string in _str: return _str[string]
     elif string in _nb: return _nb[string]
