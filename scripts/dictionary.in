@@ -1,0 +1,30 @@
+def: make_dict
+    lmake: dict
+    lmake: keys
+    lmake: values
+    ladd: dict <- keys, values
+    return: dict
+enddef
+
+def: add_value <- dict, key, value
+    lget: keys = dict <- 0
+    lget: values = dict <- 1
+    ladd: keys <- key
+    ladd: values <- value
+enddef
+
+def: get_value <- dict, key
+    lget: keys = dict <- 0
+    lget: values = dict <- 1
+    lindex: index = keys <- key
+    lget: value = values <- index
+    return: value
+enddef
+
+make_dict: test_dict
+add_value: <- test_dict, "a", 1
+add_value: <- test_dict, "b", "aaa"
+add_value: <- test_dict, "c", True
+
+get_value: value <- test_dict, "a"
+out: value
