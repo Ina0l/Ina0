@@ -11,7 +11,7 @@ ladd: test_list <- "item1", "item2", "item3"
 
 // Output the list to check the current state
 out: test_list
-out: test_list_2
+out: test_list_2 // as you can see, lists within lists are only stored as addresses
 
 // Remove an item from the list
 lremove: test_list <- "item2"
@@ -30,5 +30,8 @@ out: item_exists
 lget: item = test_list <- 0
 out: item
 
-lindex: index = test_list <- "item1"
+lindex: index = test_list <- "item3"
 out: index
+
+lset: test_list <- 0 = "item2"
+out: test_list

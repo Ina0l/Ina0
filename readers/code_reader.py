@@ -250,6 +250,30 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
                 delete_other_instance(var_name, type(value))
             else: raise IndexError("index out of range at line "+str(line_nb))
 
+        elif action == "lset":
+            if len(line.split(":")) != 2: raise syntax_exception(line_nb)
+            line = line.split(":")[1]
+            list_var_name = no_space(line.split("=")[0].split("<-")[0])
+            if list_var_name in _list: list_var = get_var(list_var_name, line_nb)
+            else:
+                get_var(list_var_name, line_nb)
+                raise type_exception(list_var_name, list, line_nb)
+            index = nb_reader.nb_reader(no_space(line.split("=")[0].split("<-")[1]), line_nb)
+            if not 0 <= index < len(list_var): raise IndexError("index out of range at line "+str(line_nb))
+
+            value_var = line.split("=")[1]
+            if get_type(value_var, line_nb) == float:
+                value = nb_reader.nb_reader(no_space(value_var), line_nb)
+            elif get_type(value_var, line_nb) == str:
+                value = str_reader.str_reader(value_var, line_nb)
+            elif get_type(value_var, line_nb) == bool:
+                value = bool_reader.bool_reader(value_var, line_nb)
+            elif get_type(value_var, line_nb) == list:
+                value = get_var(no_space(value_var), line_nb)
+            else: raise syntax_exception(line_nb)
+
+            list_var[floor(index)] = value
+
         elif action == "lindex":
             if len(line.split(":")) != 2: raise syntax_exception(line_nb)
             line = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[1]])))
@@ -262,7 +286,6 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
             list_var = line.split("=")[1].split("<-")[0]
             value_var = line.split("=")[1].split("<-")[1]
             if type(get_var(list_var, line_nb)) == list:
-                value = None
                 if get_type(value_var, line_nb) == float:
                     value = nb_reader.nb_reader(value_var, line_nb)
                 elif get_type(value_var, line_nb) == str:
@@ -271,6 +294,7 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
                     value = bool_reader.bool_reader(value_var, line_nb)
                 elif get_type(value_var, line_nb) == list:
                     value = get_var(value_var, line_nb)
+                else: raise syntax_exception(line_nb)
                 if value in get_var(list_var, line_nb):
                     _nb.update({var_name: get_var(list_var, line_nb).index(value)})
                     delete_other_instance(var_name, float)
