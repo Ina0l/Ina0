@@ -107,3 +107,21 @@ def get_indexes(string: str, sub: str) -> List[int]:
 
 def no_space(string: str) -> str:
     return "".join(string.split())
+
+def parentheses_extractor(code_line: str, line_nb: int) -> Tuple[str, int]:
+    opened_parenthesis = 0
+    inter_parenthesis_code = ""
+    in_parenthesis = False
+    last_parenthesis_index = -1
+    for char in code_line:
+        last_parenthesis_index += 1
+        if in_parenthesis: inter_parenthesis_code += char
+        if char == "(":
+            in_parenthesis = True
+            opened_parenthesis += 1
+        if char == ")":
+            opened_parenthesis -= 1
+            if opened_parenthesis < 0: raise syntax_exception(line_nb)
+            if opened_parenthesis == 0:
+                return inter_parenthesis_code[:-1], last_parenthesis_index
+    raise syntax_exception(line_nb)

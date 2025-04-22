@@ -12,5 +12,5 @@ bool: result4 = True xor False
 out: result4 // Expect True
 
 // Test nested boolean expressions
-bool: result5 = not True and (False or True) and not False
+bool: result5 = (True and (False or True)) and not False
 out: result5 // Expect True
