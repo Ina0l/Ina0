@@ -2,7 +2,7 @@ from memory_variables import to_float, parentheses_extractor
 from errors import syntax_exception
 
 
-def nb_reader(code_line: str, line: int) -> int:
+def nb_reader(code_line: str, line: int) -> float:
     while "(" in code_line:
         parentheses_extractor_output = parentheses_extractor(code_line, line)
         code_line = (code_line[:code_line.index("(")] +
@@ -11,7 +11,7 @@ def nb_reader(code_line: str, line: int) -> int:
 
     number = ""
     operation = ""
-    nb = 0
+    nb = 0.0
     for char in code_line:
         if not (char.isdigit() or char=="."):
             if char in ("+", "-", "*", "/", "^", "%"):

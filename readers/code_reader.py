@@ -148,7 +148,6 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
                 _str.update({var_name: content})
 
         elif action == "len":
-            if len(line.split(":")) != 2: raise syntax_exception(line_nb)
             var_name = no_space(":".join(line.split(":")[1:])).split("=")[0]
             if not var_name in [a[0] for a in locally_set_var]:
                 try:
@@ -162,7 +161,14 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
             elif get_type(content, line_nb) == list:
                 _nb.update({var_name: len(get_var(content, line_nb))})
                 delete_other_instance(var_name, float)
-            else: raise type_exception(line.split(",")[0], "string or list", line_nb)
+            else: raise type_exception(line.split("=")[0], "string or list", line_nb)
+
+        elif action == "round":
+            if len(line.split(":")) != 2 or len(line.split("=")) != 2: raise syntax_exception(line_nb)
+            var_name = no_space(line.split(":")[1]).split("=")[0]
+            content = nb_reader.nb_reader(no_space(line.split(":")[1]).split("=")[1], line_nb)
+            _nb.update({var_name: content})
+            delete_other_instance(var_name, float)
 
         elif action == "random":
             if len(line.split(":")) != 2: raise syntax_exception(line_nb)
