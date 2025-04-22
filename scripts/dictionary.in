@@ -6,11 +6,17 @@ def: make_dict
     return: dict
 enddef
 
-def: add_value <- dict, key, value
+def: set_value <- dict, key, value
     lget: keys = dict <- 0
     lget: values = dict <- 1
-    ladd: keys <- key
-    ladd: values <- value
+    if: not key in keys
+        ladd: keys <- key
+        ladd: values <- value
+    endif
+    if: key in keys
+        lindex: index = keys <- key
+        lset: values <- index = value
+    endif
 enddef
 
 def: get_value <- dict, key
@@ -22,9 +28,13 @@ def: get_value <- dict, key
 enddef
 
 make_dict: test_dict
-add_value: <- test_dict, "a", 1
-add_value: <- test_dict, "b", "aaa"
-add_value: <- test_dict, "c", True
+set_value: <- test_dict, "a", 1
+set_value: <- test_dict, "b", "aaa"
+set_value: <- test_dict, "c", True
 
+get_value: value <- test_dict, "a"
+out: value
+
+set_value: <- test_dict, "a", 2
 get_value: value <- test_dict, "a"
 out: value
