@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple
 from memory_variables import _bool, _str, _nb, _list, get_type, get_var, no_space
 from errors import syntax_exception, definition_exception, type_exception
 from readers import nb_reader, str_reader
@@ -36,7 +36,7 @@ def bool_reader(line: str, line_nb: int) -> bool:
                      str(bool_reader(parentheses_extractor(line, line_nb)[0], line_nb)) +
                      " " + line[parentheses_extractor(line, line_nb)[1] + 1:])
 
-    code_line: List[str] = list(filter(lambda x: x!="", line.split(" ")))
+    code_line = line.split()
     if "or" in code_line or "nor" in code_line or "and" in code_line or "nand" in code_line or "xor" in code_line or "nxor" in code_line:
         indexes = []
         if "or" in code_line: indexes.append(code_line.index("or"))
@@ -49,6 +49,8 @@ def bool_reader(line: str, line_nb: int) -> bool:
         arg1 = bool_reader(" ".join(code_line[:index]), line_nb)
         arg2 = bool_reader(" ".join(code_line[index + 1:]), line_nb)
         return bool_operation_handler(arg1, code_line[index], arg2, line_nb)
+    elif "not" in code_line and code_line[0] == "not":
+        return not bool_reader(" ".join(code_line[1:]), line_nb)
     elif "==" in code_line or "!=" in code_line or "<" in code_line or "<=" in code_line or ">" in code_line or ">=" in code_line or "in" in code_line:
         indexes = []
         if "==" in code_line: indexes.append(code_line.index("=="))
@@ -68,9 +70,6 @@ def bool_reader(line: str, line_nb: int) -> bool:
         elif code_line [0] in ("True", "true"): return True
         elif code_line[0] in _str or code_line[0] in _nb or code_line[0] in _list: raise type_exception(code_line[0], bool, line_nb)
         else: raise definition_exception(code_line[0], line_nb)
-    elif len(code_line) > 1:
-        if code_line[0] == "not":
-            return not bool_reader(" ".join(code_line[1:]), line_nb)
     else: raise syntax_exception(line_nb)
 
 def check_reader(value1: str, operation: str, value2: str, line_nb: int) -> bool:
@@ -162,7 +161,7 @@ def check_reader(value1: str, operation: str, value2: str, line_nb: int) -> bool
             param_2 = bool_reader(value2, line_nb)
         else: raise definition_exception(value1, line_nb)
 
-        return param_1 >= param_2
+        return param_1 > param_2
 
     elif operation == "in":
         if get_type(value1, line_nb) == float:

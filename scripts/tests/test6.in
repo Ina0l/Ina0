@@ -27,6 +27,10 @@ if: a <= c
     out: "a is less than or equal to c" // Expect this to pass
 endif
 
+if: not a > c
+    out: "a isn't greater than c"
+endif
+
 // Test string comparisons
 str: str1 = "hello"
 str: str2 = "world"
