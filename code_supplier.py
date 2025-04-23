@@ -12,7 +12,7 @@ if __name__ == "__main__":
     if path is None:
         path = input("path: ")
 
-    if path[-3:] != ".in": path += ".in"
+    if (not "." in path) or "" in path.split("."): path += ".in"
 
     try:
         with open(path, "r", encoding="utf-8") as file:

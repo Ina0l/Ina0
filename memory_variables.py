@@ -53,6 +53,7 @@ def delete_other_instance(var_name: str, var_type: type) -> None:
         if var_name in _nb: _nb.pop(var_name)
 
 def set_var(var_name: str, value: Union[float, str, bool, list]) -> None:
+    if value is None: return
     if type(value) == float: _nb.update({var_name: value})
     if type(value) == str: _str.update({var_name: value})
     if type(value) == bool: _bool.update({var_name: value})
@@ -101,8 +102,7 @@ def get_indexes(string: str, sub: str) -> List[int]:
         index += len(substring)
         indexes.append(index)
         index += len(sub)
-    indexes = indexes[:-1]
-    indexes.sort()
+    indexes = sorted(indexes[:-1])
     return indexes
 
 def no_space(string: str) -> str:
