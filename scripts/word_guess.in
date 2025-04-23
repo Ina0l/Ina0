@@ -1,25 +1,25 @@
 // make sure you put spaces between each symbols (otherwise it could sometimes cause an error)
 
-out: "entre un mot: "
+out: "type a word: "
 input: b
-bool: c = b != "POULET !"
+bool: c = b != "CHICKEN !"
 nb: nombre = 1
 bool: done = False
 
-while: b != "POULET !" and not done
+while: b != "CHICKEN !" and not done
     out: b
-    out: "entre un mot: "
+    out: "type a word: "
     input: b
     nb: nombre = nombre + 1
     bool: done = nombre == 10
     if: done
-        out: "ca fait dix essais mec"
+        out: "you already used up your ten tries"
     endif
 endwhile
 
 if: done
-    out: "Tu n'as pas trouvé le mot, t'es vraiment nul"
+    out: "You didn't find the word, how bad"
 endif
 if: not done
-    out: "tu as trouvé le mot"
+    out: "You found the word"
 endif

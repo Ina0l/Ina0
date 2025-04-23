@@ -4,9 +4,9 @@ nb: b=0
 
 while: a1 or a2
     nb: b=b+1
-    out: "poulet"
+    out: "chicken"
     random: a1
     random: a2
 endwhile
 
-out: b " poulets affichés"
+out: b " chicken printed"
