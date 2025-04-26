@@ -12,6 +12,8 @@ if __name__ == "__main__":
     if path is None:
         path = input("path: ")
 
+    if path == "": code_reader.code_reader([], 0, True)
+
     if (not "." in path) or "" in path.split("."): path += ".in"
 
     try:

@@ -1,4 +1,4 @@
-from typing import List, Union, Tuple
+from typing import List, Union, Tuple, Optional
 from random import random
 from math import floor
 
@@ -8,7 +8,7 @@ from memory_variables import _nb, _str, _bool, _list, _funct, delete_var, set_va
 from readers import nb_reader, str_reader, bool_reader
 
 
-def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, bool, list, None], List[Tuple[str, Union[float, str, bool, list, None]]]]:
+def code_reader(code: List[str], start_line: int, line_by_line=False) -> Optional[Tuple[Union[float, str, bool, list, None], List[Tuple[str, Union[float, str, bool, list, None]]]]]:
     skip = 0
     opened_if = 0
     opened_while = 0
@@ -17,8 +17,14 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
     condition = ""
     funct_def = ""
     locally_set_var: List[Tuple[str, Union[float, str, bool, list, None]]] = []
-
-    for line in code:
+    line_index = 0
+    while line_index < len(code) or line_by_line:
+        if line_by_line:
+            line = input(">>> ")
+            if no_space(line)[:4] == "quit": return
+        else:
+            line = code[line_index]
+            line_index += 1
 
         if "//" in line:
             line = slice_quote_apart(line, "//")[0]
