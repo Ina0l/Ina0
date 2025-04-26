@@ -125,3 +125,22 @@ def parentheses_extractor(code_line: str, line_nb: int) -> Tuple[str, int]:
             if opened_parenthesis == 0:
                 return inter_parenthesis_code[:-1], last_parenthesis_index
     raise syntax_exception(line_nb)
+
+def slice_quote_apart(string: str, sub: str) -> List[str]:
+    quote_opened = False
+    sub_string = ""
+    sliced_string = []
+    current_slice = ""
+    for char in string:
+        if char == "\"": quote_opened = False if quote_opened else True
+        if char == sub[len(sub_string)] and not quote_opened:
+            sub_string += char
+            if sub_string == sub:
+                sliced_string.append(current_slice)
+                current_slice = ""
+                sub_string = ""
+        else:
+            current_slice += char
+            sub_string = ""
+    sliced_string.append(current_slice)
+    return sliced_string

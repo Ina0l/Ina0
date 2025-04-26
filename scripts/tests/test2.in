@@ -6,12 +6,12 @@ out: x
 out: y
 out: z
 
-// Test if-else condition
+// Test if condition
 if: x > 3
     out: "x is greater than 3"
 endif
-
-if: x < 3
+// There's no 'else'
+if: x <= 3
     out: "x is less than 3"
 endif
 

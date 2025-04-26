@@ -4,7 +4,7 @@ from math import floor
 
 from errors import syntax_exception, type_exception, definition_exception
 from memory_variables import _nb, _str, _bool, _list, _funct, delete_var, set_var, get_var, delete_other_instance, \
-    get_type, no_space
+    get_type, no_space, slice_quote_apart
 from readers import nb_reader, str_reader, bool_reader
 
 
@@ -21,10 +21,10 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
     for line in code:
 
         if "//" in line:
-            line = line.split("//")[0]
+            line = slice_quote_apart(line, "//")[0]
 
         line_nb += 1
-        action = no_space(line.split(":")[0])
+        action = no_space(slice_quote_apart(line, ":")[0])
 
         if action == "enddef":
             funct_def = ""
@@ -52,12 +52,12 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
         if action == "if":
             if not opened_while > 0:
                 opened_if += 1
-                if not bool_reader.bool_reader(line.split(":")[1], line_nb): skip += 1
+                if not bool_reader.bool_reader(slice_quote_apart(line, ":")[1], line_nb): skip += 1
 
         if action == "while":
             if not skip > 0:
                 if opened_while == 0:
-                    condition = line.split(":")[1]
+                    condition = slice_quote_apart(line, ":")[1]
                     bool_reader.bool_reader(condition, line_nb)
                 opened_while += 1
 
@@ -68,37 +68,37 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
             continue
 
         if action == "nb":
-            if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            line = no_space(line.split(":")[1])
-            var_name = line.split("=")[0]
+            if len(slice_quote_apart(line, ":")) != 2: raise syntax_exception(line_nb)
+            line = no_space(slice_quote_apart(line, ":")[1])
+            var_name = slice_quote_apart(line, "=")[0]
             if not var_name in [a[0] for a in locally_set_var]:
                 try:
                     locally_set_var.append((var_name, get_var(var_name, line_nb)))
                 except NameError:
                     locally_set_var.append((var_name, None))
-            content = "=".join(line.split("=")[1:])
+            content = slice_quote_apart(line, "=")[1]
             _nb.update({var_name: nb_reader.nb_reader(content, line_nb)})
             delete_other_instance(var_name, float)
 
         elif action == "str":
-            var_name = no_space(":".join(line.split(":")[1:])).split("=")[0]
+            var_name = no_space(slice_quote_apart(line, ":")[1].split("=")[0])
             if not var_name in [a[0] for a in locally_set_var]:
                 try:
                     locally_set_var.append((var_name, get_var(var_name, line_nb)))
                 except NameError:
                     locally_set_var.append((var_name, None))
-            content = "=".join(line.split("=")[1:])
+            content = slice_quote_apart(line, "=")[1]
             _str.update({var_name: str_reader.str_reader(content, line_nb)})
             delete_other_instance(var_name, str)
 
         elif action == "bool":
-            var_name = no_space(":".join(line.split(":")[1:])).split("=")[0]
+            var_name = no_space(slice_quote_apart(line, ":")[1].split("=")[0])
             if not var_name in [a[0] for a in locally_set_var]:
                 try:
                     locally_set_var.append((var_name, get_var(var_name, line_nb)))
                 except NameError:
                     locally_set_var.append((var_name, None))
-            content = "=".join(line.split("=")[1:])
+            content = "=".join(slice_quote_apart(line, "=")[1:])
             _bool.update({var_name: bool_reader.bool_reader(content, line_nb)})
             delete_other_instance(var_name, bool)
 
@@ -111,11 +111,11 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
         elif action == "endwhile": pass
 
         elif action == "def":
-            if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            if len(line.split("<-")) > 2: raise syntax_exception(line_nb)
-            funct_def = no_space(line.split(":")[1].split("<-")[0])
+            if len(slice_quote_apart(line, ":")) != 2: raise syntax_exception(line_nb)
+            if len(slice_quote_apart(line, "<-")) > 2: raise syntax_exception(line_nb)
+            funct_def = no_space(slice_quote_apart(line, ":")[1].split("<-")[0])
             if "<-" in line:
-                funct_parameters = tuple(no_space(a) for a in line.split("<-")[-1].split(","))
+                funct_parameters = tuple(no_space(a) for a in slice_quote_apart(slice_quote_apart(line, "<-")[-1], ","))
             else: funct_parameters = ()
             _funct.update({funct_def: ([], funct_parameters, line_nb)})
 
@@ -123,7 +123,7 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
 
         elif action == "return":
             if start_line == 0: raise syntax_exception(line_nb)
-            code = ":".join(line.split(":")[1:])
+            code = slice_quote_apart(line, ":")[1]
             if get_type(code, line_nb) == float:
                 return nb_reader.nb_reader(no_space(code), line_nb), locally_set_var
             elif get_type(code, line_nb) == str:
@@ -135,8 +135,8 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
             else: raise definition_exception(code, line_nb)
 
         elif action == "input":
-            if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            var_name = no_space(line.split(":")[1])
+            if len(slice_quote_apart(line, ":")) != 2: raise syntax_exception(line_nb)
+            var_name = no_space(slice_quote_apart(line, ":")[1])
             if not var_name in [a[0] for a in locally_set_var]:
                 try:
                     locally_set_var.append((var_name, get_var(var_name, line_nb)))
@@ -148,31 +148,31 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
                 _str.update({var_name: content})
 
         elif action == "len":
-            var_name = no_space(":".join(line.split(":")[1:])).split("=")[0]
+            var_name = no_space(slice_quote_apart(line, ":")[1]).split("=")[0]
             if not var_name in [a[0] for a in locally_set_var]:
                 try:
                     locally_set_var.append((var_name, get_var(var_name, line_nb)))
                 except NameError:
                     locally_set_var.append((var_name, None))
-            content = no_space(":".join(line.split(":")[1:])).split("=")[1]
+            content = slice_quote_apart(slice_quote_apart(line, ":")[1], "=")[1]
             if get_type(content, line_nb) == str:
                 _nb.update({var_name: len(str_reader.str_reader(content, line_nb))})
                 delete_other_instance(var_name, float)
-            elif get_type(content, line_nb) == list:
-                _nb.update({var_name: len(get_var(content, line_nb))})
+            elif get_type(no_space(content), line_nb) == list:
+                _nb.update({var_name: len(get_var(no_space(content), line_nb))})
                 delete_other_instance(var_name, float)
-            else: raise type_exception(line.split("=")[0], "string or list", line_nb)
+            else: raise type_exception(slice_quote_apart(line, "=")[0], "string or list", line_nb)
 
         elif action == "round":
-            if len(line.split(":")) != 2 or len(line.split("=")) != 2: raise syntax_exception(line_nb)
-            var_name = no_space(line.split(":")[1]).split("=")[0]
-            content = nb_reader.nb_reader(no_space(line.split(":")[1]).split("=")[1], line_nb)
+            if len(slice_quote_apart(line, ":")) != 2 or len(slice_quote_apart(line, "=")) != 2: raise syntax_exception(line_nb)
+            var_name = no_space(slice_quote_apart(line, ":")[1]).split("=")[0]
+            content = nb_reader.nb_reader(no_space(slice_quote_apart(line, ":")[1]).split("=")[1], line_nb)
             _nb.update({var_name: content})
             delete_other_instance(var_name, float)
 
         elif action == "random":
-            if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            var_name = no_space(line.split(":")[1])
+            if len(slice_quote_apart(line, ":")) != 2: raise syntax_exception(line_nb)
+            var_name = no_space(slice_quote_apart(line, ":")[1])
             if not var_name in [a[0] for a in locally_set_var]:
                 try:
                     locally_set_var.append((var_name, get_var(var_name, line_nb)))
@@ -182,16 +182,17 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
             _bool.update({var_name: random() > 0.5})
 
         elif action == "out":
-            print(str_reader.str_reader(":".join(line.split(":")[1:]), line_nb))
+            if ":" in line: print(str_reader.str_reader(slice_quote_apart(line, ":")[1], line_nb))
+            else: print()
 
         elif action == "del":
-            if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            for var_name in no_space(line.split(":")[1]).split(","):
+            if len(slice_quote_apart(line, ":")) != 2: raise syntax_exception(line_nb)
+            for var_name in no_space(slice_quote_apart(line, ":")[1]).split(","):
                 delete_var(var_name)
 
         elif action == "lmake":
-            if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            var_name = no_space(line.split(":")[1])
+            if len(slice_quote_apart(line, ":")) != 2: raise syntax_exception(line_nb)
+            var_name = no_space(slice_quote_apart(line, ":")[1])
             if not var_name in [a[0] for a in locally_set_var]:
                 try:
                     locally_set_var.append((var_name, get_var(var_name, line_nb)))
@@ -201,12 +202,12 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
             _list.update({var_name: []})
 
         elif action == "ladd":
-            if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            if len(line.split("<-")) < 2: raise syntax_exception(line_nb)
-            line = ":".join(line.split(":")[1:])
-            if get_type(line.split("<-")[0], line_nb) != list:
-                raise type_exception(no_space(line.split("<-")[0]), list, line_nb)
-            for obj in "<-".join(line.split("<-")[1:]).split(","):
+            if len(slice_quote_apart(line, ":")) != 2: raise syntax_exception(line_nb)
+            if len(slice_quote_apart(line, "<-")) < 2: raise syntax_exception(line_nb)
+            line = slice_quote_apart(line, ":")[1]
+            if get_type(slice_quote_apart(line, "<-")[0], line_nb) != list:
+                raise type_exception(no_space(slice_quote_apart(line, "<-")[0]), list, line_nb)
+            for obj in slice_quote_apart(slice_quote_apart(line, "<-")[1], ","):
                 if get_type(obj, line_nb) == float:
                     value = nb_reader.nb_reader(no_space(obj), line_nb)
                 elif get_type(obj, line_nb) == str:
@@ -216,16 +217,16 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
                 elif get_type(obj, line_nb) == list:
                     value = get_var(no_space(obj), line_nb)
                 else: raise definition_exception(obj, line_nb)
-                _list[no_space(line.split("<-")[0])].append(value)
+                _list[no_space(slice_quote_apart(line, "<-")[0])].append(value)
 
         elif action == "lremove":
-            if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            if len(line.split("<-")) < 2: raise syntax_exception(line_nb)
-            line = ":".join(line.split(":")[1:])
-            if get_type(line.split("<-")[0], line_nb) != list:
-                raise type_exception(no_space(line.split("<-")[0]), list, line_nb)
-            for obj in "<-".join(line.split("<-")[1:]).split(","):
-                if get_type("".join(filter(lambda x: x!=" ", [a for a in obj])), line_nb) == float:
+            if len(slice_quote_apart(line, ":")) != 2: raise syntax_exception(line_nb)
+            if len(slice_quote_apart(line, "<-")) < 2: raise syntax_exception(line_nb)
+            line = slice_quote_apart(line, ":")[1]
+            if get_type(slice_quote_apart(line, "<-")[0], line_nb) != list:
+                raise type_exception(no_space(slice_quote_apart(line, "<-")[0]), list, line_nb)
+            for obj in slice_quote_apart(slice_quote_apart(line, "<-")[1], ","):
+                if get_type(no_space(obj), line_nb) == float:
                     value = nb_reader.nb_reader(no_space(obj), line_nb)
                 elif get_type(obj, line_nb) == str:
                     value = str_reader.str_reader(obj, line_nb)
@@ -234,40 +235,42 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
                 elif get_type(obj, line_nb) == list:
                     value = get_var(no_space(obj), line_nb)
                 else: raise definition_exception(obj, line_nb)
-                if value in _list[no_space(line.split("<-")[0])]:
-                    _list[no_space(line.split("<-")[0])].remove(value)
-                else: raise ValueError(no_space(line.split("<-")[0]) + " not in list at line "+str(line_nb))
+                if value in _list[no_space(slice_quote_apart(line, "<-")[0])]:
+                    _list[no_space(slice_quote_apart(line, "<-")[0])].remove(value)
+                else: raise ValueError(no_space(slice_quote_apart(line, "<-")[0]) + " not in list at line "+str(line_nb))
 
-        elif action == "lget":
-            if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            line = no_space(line.split(":")[1])
-            var_name = line.split("=")[0]
+        elif action == "get":
+            if len(slice_quote_apart(line, ":")) != 2: raise syntax_exception(line_nb)
+            line = no_space(slice_quote_apart(line, ":")[1])
+            var_name = slice_quote_apart(line, "=")[0]
             if not var_name in [a[0] for a in locally_set_var]:
                 try:
                     locally_set_var.append((var_name, get_var(var_name, line_nb)))
                 except NameError:
                     locally_set_var.append((var_name, None))
-            if type(get_var(line.split("=")[1].split("<-")[0], line_nb)) == list:
-                list_value = _list[line.split("=")[1].split("<-")[0]]
-            else: raise type_exception(line.split("<-")[0], list, line_nb)
-            if len(list_value) > nb_reader.nb_reader(line.split("=")[1].split("<-")[1], line_nb):
-                value = list_value[floor(nb_reader.nb_reader(line.split("=")[1].split("<-")[1], line_nb))]
+            if get_type(slice_quote_apart(slice_quote_apart(line, "=")[1], "<-")[0], line_nb) == list:
+                origin_value = _list[slice_quote_apart(slice_quote_apart(line, "=")[1], "<-")[0]]
+            elif get_type(slice_quote_apart(slice_quote_apart(line, "=")[1], "<-")[0], line_nb) == str:
+                origin_value = str_reader.str_reader(slice_quote_apart(slice_quote_apart(line, "=")[1], "<-")[0], line_nb)
+            else: raise type_exception(slice_quote_apart(line, "<-")[0], "list or string", line_nb)
+            if len(origin_value) > nb_reader.nb_reader(slice_quote_apart(slice_quote_apart(line, "=")[1], "<-")[1], line_nb):
+                value = origin_value[floor(nb_reader.nb_reader(slice_quote_apart(slice_quote_apart(line, "=")[1], "<-")[1], line_nb))]
                 set_var(var_name, value)
                 delete_other_instance(var_name, type(value))
             else: raise IndexError("index out of range at line "+str(line_nb))
 
         elif action == "lset":
-            if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            line = line.split(":")[1]
-            list_var_name = no_space(line.split("=")[0].split("<-")[0])
+            if len(slice_quote_apart(line, ":")) != 2: raise syntax_exception(line_nb)
+            line = slice_quote_apart(line, ":")[1]
+            list_var_name = no_space(slice_quote_apart(line, "=")[0].split("<-")[0])
             if list_var_name in _list: list_var = get_var(list_var_name, line_nb)
             else:
                 get_var(list_var_name, line_nb)
                 raise type_exception(list_var_name, list, line_nb)
-            index = nb_reader.nb_reader(no_space(line.split("=")[0].split("<-")[1]), line_nb)
+            index = nb_reader.nb_reader(no_space(slice_quote_apart(line, "=")[0].split("<-")[1]), line_nb)
             if not 0 <= index < len(list_var): raise IndexError("index out of range at line "+str(line_nb))
 
-            value_var = line.split("=")[1]
+            value_var = slice_quote_apart(line, "=")[1]
             if get_type(value_var, line_nb) == float:
                 value = nb_reader.nb_reader(no_space(value_var), line_nb)
             elif get_type(value_var, line_nb) == str:
@@ -281,16 +284,16 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
             list_var[floor(index)] = value
 
         elif action == "lindex":
-            if len(line.split(":")) != 2: raise syntax_exception(line_nb)
-            line = "".join(list(filter(lambda x: x != " ", [a for a in line.split(":")[1]])))
-            var_name = line.split("=")[0]
+            if len(slice_quote_apart(line, ":")) != 2: raise syntax_exception(line_nb)
+            line = no_space(slice_quote_apart(line, ":")[1])
+            var_name = slice_quote_apart(line, "=")[0]
             if not var_name in [a[0] for a in locally_set_var]:
                 try:
                     locally_set_var.append((var_name, get_var(var_name, line_nb)))
                 except NameError:
                     locally_set_var.append((var_name, None))
-            list_var = line.split("=")[1].split("<-")[0]
-            value_var = line.split("=")[1].split("<-")[1]
+            list_var = slice_quote_apart(slice_quote_apart(line, "=")[1], "<-")[0]
+            value_var = slice_quote_apart(slice_quote_apart(line, "=")[1], "<-")[1]
             if type(get_var(list_var, line_nb)) == list:
                 if get_type(value_var, line_nb) == float:
                     value = nb_reader.nb_reader(value_var, line_nb)
@@ -309,8 +312,10 @@ def code_reader(code: List[str], start_line: int) -> Tuple[Union[float, str, boo
 
         elif action in _funct:
             if ":" in line:
-                var_name = no_space(line.split(":")[1].split("<-")[0])
-                params_values = list(filter(lambda x: x!="", "".join(line.split("<-")[1:]).split(",")))
+                var_name = no_space(slice_quote_apart(line, ":")[1].split("<-")[0])
+                if "<-" in line:
+                    params_values = slice_quote_apart(slice_quote_apart(line, "<-")[1], ",")
+                else: params_values = []
             else: params_values, var_name = [], None
             function = _funct[action]
             if len(params_values) != len(function[1]): raise syntax_exception(line_nb)

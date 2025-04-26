@@ -27,7 +27,7 @@ out: test_length
 bool: item_exists = "item1" in test_list
 out: item_exists
 
-lget: item = test_list <- 0
+get: item = test_list <- 0
 out: item
 
 lindex: index = test_list <- "item3"

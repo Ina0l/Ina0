@@ -7,6 +7,9 @@ str: name = "User"
 str: message = "Hello, " name
 out: message // Expect "Hello, User"
 
+get: char = message <- 1
+out: char
+
 // Test unclosed quote
 // This should raise a syntax error
 // str: invalid_string = "Hello

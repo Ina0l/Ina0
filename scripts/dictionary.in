@@ -7,8 +7,8 @@ def: make_dict
 enddef
 
 def: set_value <- dict, key, value
-    lget: keys = dict <- 0
-    lget: values = dict <- 1
+    get: keys = dict <- 0
+    get: values = dict <- 1
     if: not key in keys
         ladd: keys <- key
         ladd: values <- value
@@ -20,10 +20,10 @@ def: set_value <- dict, key, value
 enddef
 
 def: get_value <- dict, key
-    lget: keys = dict <- 0
-    lget: values = dict <- 1
+    get: keys = dict <- 0
+    get: values = dict <- 1
     lindex: index = keys <- key
-    lget: value = values <- index
+    get: value = values <- index
     return: value
 enddef
 
