@@ -1,10 +1,10 @@
 // Test string concatenation (made without the '+' sign here)
-str: greeting = "Hello" " " "World"
+str: greeting = "Hello" + " "+ "World"
 out: greeting // Expect "Hello World"
 
 // Test string with variables
 str: name = "User"
-str: message = "Hello, " name
+str: message = "Hello, " + name
 out: message // Expect "Hello, User"
 
 get: char = message <- 1

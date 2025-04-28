@@ -17,16 +17,16 @@ nb: sum = 0
 
 while: counter < 10
     if: counter % 2 == 0
-        out: counter " is even"
+        out: counter + " is even"
         nb: sum = sum + counter
     endif
     if: counter % 2 != 0
-        out: counter " is odd"
+        out: counter + " is odd"
     endif
     nb: counter = counter + 1
 endwhile
 
-out: "Sum of even numbers: " sum // Expect 2 + 4 + 6 + 8 = 20
+out: "Sum of even numbers: " + sum // Expect 2 + 4 + 6 + 8 = 20
 
 // Test nested while loops
 nb: x = 0
@@ -35,7 +35,7 @@ nb: y = 0
 while: x < 3
     nb: y = 0
     while: y < 3
-        out: "x=" x " y=" y
+        out: "x=" + x + " y=" + y
         nb: y = y + 1
     endwhile
     nb: x = x + 1

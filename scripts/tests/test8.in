@@ -35,5 +35,5 @@ enddef
 nb: n = 6
 // Call the recursive factorial function
 factorial: a <- n
-out: "factorial of " n
+out: "factorial of " + n
 out: a // should be 720 as 6!=720

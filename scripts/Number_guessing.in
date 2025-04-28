@@ -30,7 +30,7 @@ while: not guessed_correctly
     nb: attempts = attempts + 1
     bool: guessed_correctly = guess == number_to_guess
     if: guessed_correctly
-        out: "Congrats ! You guessed the number in " attempts " tries."
+        out: "Congrats ! You guessed the number in " + attempts + " tries."
     endif
     if: not guessed_correctly
         if: guess < number_to_guess
