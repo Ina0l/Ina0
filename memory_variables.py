@@ -95,7 +95,6 @@ def get_type(code: str, line: int) -> type:
 def get_indexes(string: str, sub: str) -> List[int]:
     if string.count(sub) == 0: raise ValueError(f"'{sub}' is not in list")
     indexes = []
-    if string.index(sub) == 0: indexes.append(0)
     if string.rindex(sub) == len(string) - len(sub) - 1: indexes.append(len(string) - len(sub) - 1)
     index = 0
     for substring in string.split(sub):

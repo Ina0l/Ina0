@@ -3,8 +3,7 @@ nb: b = 0
 nb: c = 0
 out: a
 nb: i = 0
-nb: max = 24
-while: i < max
+while: i < 24
     nb: c = b
     nb: b = a
     nb: a = c+b

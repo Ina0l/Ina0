@@ -1,4 +1,4 @@
-// Test string concatenation (made without the '+' sign here)
+// Test string concatenation
 str: greeting = "Hello" + " "+ "World"
 out: greeting // Expect "Hello World"
 

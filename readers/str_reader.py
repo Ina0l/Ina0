@@ -19,6 +19,9 @@ def str_reader(line: str, line_nb: int) -> str:
             else: raise syntax_exception(line_nb)
         else:
             if len(word.split()) != 1: raise syntax_exception(line_nb)
-            result = str(get_var(no_space(word), line_nb)) if result is None else result + str(get_var(no_space(word), line_nb))
+            value = str(get_var(no_space(word), line_nb))
+            if type(get_var(no_space(word), line_nb)) == float:
+                if value.split(".")[1] == "0": value = value.split(".")[0]
+            result = value if result is None else result + value
     if result is None: raise syntax_exception(line_nb)
     return result
