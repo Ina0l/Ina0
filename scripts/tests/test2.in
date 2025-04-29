@@ -7,11 +7,11 @@ out: y
 out: z
 
 // Test if condition
-if: x > 3
+if: x>3
     out: "x is greater than 3"
 endif
 // There's no 'else'
-if: x <= 3
+if: x<=3
     out: "x is less than 3"
 endif
 

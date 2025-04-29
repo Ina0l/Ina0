@@ -143,3 +143,14 @@ def slice_quote_apart(string: str, sub: str) -> List[str]:
             sub_string = ""
     sliced_string.append(current_slice)
     return sliced_string
+
+
+def insert_spaces(string: str) -> str:
+    spaced_string = ""
+    for index in range(len(string)):
+        if (index != len(string)-1 and string[index] in ("=", "!") and string[index + 1] == "=") or string[index] in ("<", ">"):
+            spaced_string += " "
+        spaced_string += string[index]
+        if (index != 0 and string[index] == "=" and string[index - 1] in ("=", "!", "<", ">")) or (index != len(string) - 1 and string[index] in ("<", ">") and string[index + 1] != "="):
+            spaced_string += " "
+    return " ".join(spaced_string.split())

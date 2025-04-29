@@ -1,4 +1,4 @@
-from memory_variables import _bool, _str, _nb, _list, get_type, get_var, no_space, parentheses_extractor
+from memory_variables import _bool, _str, _nb, _list, get_type, get_var, no_space, parentheses_extractor, insert_spaces
 from errors import syntax_exception, definition_exception, type_exception
 from readers import nb_reader, str_reader
 
@@ -18,7 +18,7 @@ def bool_reader(line: str, line_nb: int) -> bool:
                      str(bool_reader(parentheses_extractor(line, line_nb)[0], line_nb)) +
                      " " + line[parentheses_extractor(line, line_nb)[1] + 1:])
 
-    code_line = line.split()
+    code_line = insert_spaces(line).split()
     if "or" in code_line or "nor" in code_line or "and" in code_line or "nand" in code_line or "xor" in code_line or "nxor" in code_line:
         indexes = []
         if "or" in code_line: indexes.append(code_line.index("or"))
@@ -52,7 +52,9 @@ def bool_reader(line: str, line_nb: int) -> bool:
         elif code_line [0] in ("True", "true"): return True
         elif code_line[0] in _str or code_line[0] in _nb or code_line[0] in _list: raise type_exception(code_line[0], bool, line_nb)
         else: raise definition_exception(code_line[0], line_nb)
-    else: raise syntax_exception(line_nb)
+    else:
+        print(code_line)
+        raise syntax_exception(line_nb)
 
 def check_reader(value1: str, operation: str, value2: str, line_nb: int) -> bool:
     if operation == "==":
