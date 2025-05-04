@@ -15,6 +15,9 @@ if __name__ == "__main__":
         directories = directories[1:]
 
     for path in paths:
+        print(path)
+        print()
         with open(path, "r", encoding="utf-8") as file:
             code = file.read().split("\n")
         code_reader.code_reader(code, 0)
+        print("\n\n")
