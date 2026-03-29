@@ -154,20 +154,20 @@ def code_reader(code: List[str], start_line: int, line_by_line=False) -> Optiona
                 _str.update({var_name: content})
 
         elif action == "len":
-            var_name = no_space(slice_quote_apart(line, ":")[1]).split("=")[0]
+            var_name = no_space(slice_quote_apart(line, ":")[1]).split("<-")[0]
             if not var_name in [a[0] for a in locally_set_var]:
                 try:
                     locally_set_var.append((var_name, get_var(var_name, line_nb)))
                 except NameError:
                     locally_set_var.append((var_name, None))
-            content = slice_quote_apart(slice_quote_apart(line, ":")[1], "=")[1]
+            content = slice_quote_apart(slice_quote_apart(line, ":")[1], "<-")[1]
             if get_type(content, line_nb) == str:
                 _nb.update({var_name: len(str_reader.str_reader(content, line_nb))})
                 delete_other_instance(var_name, float)
             elif get_type(no_space(content), line_nb) == list:
                 _nb.update({var_name: len(get_var(no_space(content), line_nb))})
                 delete_other_instance(var_name, float)
-            else: raise type_exception(slice_quote_apart(line, "=")[0], "string or list", line_nb)
+            else: raise type_exception(slice_quote_apart(line, "<-")[0], "string or list", line_nb)
 
         elif action == "round":
             if len(slice_quote_apart(line, ":")) != 2 or len(slice_quote_apart(line, "=")) != 2: raise syntax_exception(line_nb)
