@@ -72,7 +72,7 @@ def get_type(code: str, line: int) -> type:
                     elif index in get_indexes(code, "\""):
                         quote_opened = False if quote_opened else False
     elif " == " in code or " != " in code or " <= " in code or " >= " in code or " < " in code or " > " in code:
-        for operator in (" == ", " != ", " <=> ", " >= ", " < ", " > "):
+        for operator in (" == ", " != ", " <= ", " >= ", " < ", " > "):
             if operator in code:
                 indexes = get_indexes(code, operator) + get_indexes(code, "\"")
                 indexes.sort()
@@ -84,10 +84,10 @@ def get_type(code: str, line: int) -> type:
                         quote_opened = False if quote_opened else False
     elif "\"" in code: return str
     else:
-        if "+" in code or "-" in code or "*" in code or "/" in code or "^" in code or "%" in code:
+        if "-" in code or "*" in code or "/" in code or "^" in code or "%" in code:
             return float
-        elif len(code.split()) > 1:
-            return str
+        elif "+" in code:
+            return get_type(code.split("+")[0], line)
         elif code == "": raise syntax_exception(line)
         elif code[0].isdigit(): return float
         else: return type(get_var(no_space(code), line))
