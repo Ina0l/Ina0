@@ -1,3 +1,5 @@
+// There is no built-in dictionary like in python so that's how you code it yourself:
+
 def: make_dict
     lmake: dict
     lmake: keys

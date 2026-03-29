@@ -1,8 +1,8 @@
 // Test mathematical expression parsing
-nb: result1 = 2 + 3 * 4
+nb: result1 = 2 +3 * 4
 out: result1 // Expect 20 (there are no priorities here)
 
-nb: result2 = 2 + (3 * 4)
+nb: result2 = 2 + (3 *4)
 out: result2 // Expect 14
 
 nb: result3 = 10 / 2 + 5

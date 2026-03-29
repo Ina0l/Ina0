@@ -13,14 +13,14 @@ ladd: test_list <- "item1", "item2", "item3"
 out: test_list
 out: test_list_2 // as you can see, lists within lists are only stored as addresses
 
-// Remove an item from the list
+// Remove the first instance of an item from the list
 lremove: test_list <- "item2"
 
 // Output the modified list
 out: test_list
 
 // Get the length of the list
-len: test_length = test_list
+len: test_length <- test_list
 out: test_length
 
 // Test if a particular item exists in the list

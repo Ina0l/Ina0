@@ -7,8 +7,13 @@ str: name = "User"
 str: message = "Hello, " + name
 out: message // Expect "Hello, User"
 
-get: char = message <- 1
-out: char
+// 0-based character getter
+get: char = message <- 7
+out: char // Expect U
+
+// string length
+len: length <- message
+out: length
 
 // Test unclosed quote
 // This should raise a syntax error
