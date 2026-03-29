@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple, Union, Optional
 from errors import definition_exception, type_exception, syntax_exception
 
 _nb: Dict[str, float] = {}
@@ -59,7 +59,14 @@ def set_var(var_name: str, value: Union[float, str, bool, list]) -> None:
     if type(value) == bool: _bool.update({var_name: value})
     if type(value) == list: _list.update({var_name: value})
 
-def get_type(code: str, line: int) -> type:
+def get_type(code: str, line: int) -> Optional[type[bool] | type[str] | type[float]]:
+    """
+    Evaluates an expression's type
+    :param code: the expression that's being evaluated
+    :param line: the line at which this expression is, used to raise errors
+    :return: the type of the expression
+    :raise: Syntax error when the expression don't have correct syntax
+    """
     if " or " in code or " nor " in code or " and " in code or " nand " in code or " xor " in code or " nxor " in code or "not " in code:
         for operator in (" or ", " nor ", " and ", " nand ", " xor ", " nxor ", "not "):
             if operator in code:
@@ -126,12 +133,18 @@ def parentheses_extractor(code_line: str, line_nb: int) -> Tuple[str, int]:
     raise syntax_exception(line_nb)
 
 def slice_quote_apart(string: str, sub: str) -> List[str]:
+    """
+    Allows to slice strings just like .slice() but ignore anything between two \"
+    :param string: the string to slice
+    :param sub: the substring used to slice
+    :return: the list containing every part from the original string
+    """
     quote_opened = False
     sub_string = ""
     sliced_string = []
     current_slice = ""
     for char in string:
-        if char == "\"": quote_opened = False if quote_opened else True
+        if char == "\"": quote_opened = not quote_opened
         if char == sub[len(sub_string)] and not quote_opened:
             sub_string += char
             if sub_string == sub:

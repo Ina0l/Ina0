@@ -188,8 +188,10 @@ def code_reader(code: List[str], start_line: int, line_by_line=False) -> Optiona
             _bool.update({var_name: random() > 0.5})
 
         elif action == "out":
-            if ":" in line: print(str_reader.str_reader(slice_quote_apart(line, ":")[1], line_nb))
-            else: print()
+            if ":" in line:
+                print(str_reader.str_reader(slice_quote_apart(line, ":")[1], line_nb))
+            else:
+                print()
 
         elif action == "del":
             if len(slice_quote_apart(line, ":")) != 2: raise syntax_exception(line_nb)
@@ -230,7 +232,7 @@ def code_reader(code: List[str], start_line: int, line_by_line=False) -> Optiona
             if len(slice_quote_apart(line, "<-")) < 2: raise syntax_exception(line_nb)
             line = slice_quote_apart(line, ":")[1]
             if get_type(slice_quote_apart(line, "<-")[0], line_nb) != list:
-                raise type_exception(no_space(slice_quote_apart(line, "<-")[0]), list, line_nb)
+                raise type_exception(slice_quote_apart(line, "<-")[0], list, line_nb)
             for obj in slice_quote_apart(slice_quote_apart(line, "<-")[1], ","):
                 if get_type(no_space(obj), line_nb) == float:
                     value = nb_reader.nb_reader(no_space(obj), line_nb)
