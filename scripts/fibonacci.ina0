@@ -9,4 +9,4 @@ while: i < 24
     nb: a = c+b
     out: a
     nb: i = i + 1
-endwhile
+end_while

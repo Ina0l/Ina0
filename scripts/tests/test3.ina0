@@ -8,7 +8,7 @@ str: message = "Hello, " + name
 out: message // Expect "Hello, User"
 
 // 0-based character getter
-get: char = message <- 7
+get: char <- message, 7
 out: char // Expect U
 
 // string length
@@ -18,5 +18,3 @@ out: length
 // Test unclosed quote
 // This should raise a syntax error
 // str: invalid_string = "Hello
-
-// I tested it and it works

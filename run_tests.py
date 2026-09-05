@@ -9,7 +9,8 @@ if __name__ == "__main__":
     directories = ["scripts\\tests"]
     while len(directories) != 0:
         for path in listdir(directories[0]):
-            if isfile(join(directories[0], path)): paths.append(join(directories[0], path))
+            if isfile(join(directories[0], path)):
+                paths.append(join(directories[0], path))
             else:
                 directories.append(join(directories[0], path))
         directories = directories[1:]

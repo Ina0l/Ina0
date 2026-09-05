@@ -9,15 +9,15 @@ out: z
 // Test if condition
 if: x>3
     out: "x is greater than 3"
-endif
+end_if
 // There's no 'else'
 if: x<=3
     out: "x is less than 3"
-endif
+end_if
 
 // Test while loop
 nb: counter = 0
 while: counter < 5
     out: counter
     nb: counter = counter + 1
-endwhile
+end_while

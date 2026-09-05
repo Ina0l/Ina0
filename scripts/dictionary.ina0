@@ -1,33 +1,33 @@
 // There is no built-in dictionary like in python so that's how you code it yourself:
 
 def: make_dict
-    lmake: dict
-    lmake: keys
-    lmake: values
-    ladd: dict <- keys, values
+    make_list: dict
+    make_list: keys
+    make_list: values
+    append: <- dict, keys, values
     return: dict
-enddef
+end_def
 
 def: set_value <- dict, key, value
-    get: keys = dict <- 0
-    get: values = dict <- 1
+    get: keys <- dict, 0
+    get: values <- dict, 1
     if: not key in keys
-        ladd: keys <- key
-        ladd: values <- value
-    endif
+        append: <- keys, key
+        append: <- values, value
+    end_if
     if: key in keys
-        lindex: index = keys <- key
-        lset: values <- index = value
-    endif
-enddef
+        index: index <- keys, key
+        set: <- values, index, value
+    end_if
+end_def
 
 def: get_value <- dict, key
-    get: keys = dict <- 0
-    get: values = dict <- 1
-    lindex: index = keys <- key
-    get: value = values <- index
+    get: keys <- dict, 0
+    get: values <- dict, 1
+    index: index <- keys, key
+    get: value <- values, index
     return: value
-enddef
+end_def
 
 make_dict: test_dict
 set_value: <- test_dict, "a", 1
@@ -35,6 +35,9 @@ set_value: <- test_dict, "b", "aaa"
 set_value: <- test_dict, "c", True
 
 get_value: value <- test_dict, "a"
+out: value
+
+get_value: value <- test_dict, "b"
 out: value
 
 set_value: <- test_dict, "a", 2

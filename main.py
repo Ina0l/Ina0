@@ -12,10 +12,11 @@ if __name__ == "__main__":
     if path is None:
         path = input("path: ")
 
-    if path == "": code_reader.code_reader([], 0, True)
+    if path == "":
+        code_reader.code_reader([], 0, True)
     else:
-        if (not "." in path) or "" in path.split("."): path += ".in"
-
+        if (not "." in path) or "" in path.split("."):
+            path += ".in"
         try:
             with open(path, "r", encoding="utf-8") as file:
                 code = file.read().split("\n")

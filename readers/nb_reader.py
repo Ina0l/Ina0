@@ -1,5 +1,14 @@
-from memory_variables import to_float, parentheses_extractor
+from memory_variables import parentheses_extractor, get_var
 from errors import syntax_exception
+
+
+def to_float(string: str, line: int) -> float:
+    try:
+        return float(string)
+    except ValueError as error:
+        if string.strip()[0].isdecimal():
+            raise error
+        return float(get_var(string, line, float))
 
 
 def nb_reader(code_line: str, line: int) -> float:
@@ -35,12 +44,20 @@ def nb_reader(code_line: str, line: int) -> float:
                 number += char
         else:
             number += char
-    if operation == "+": nb += to_float(number, line)
-    elif operation == "-": nb -= to_float(number, line)
-    elif operation == "*": nb *= to_float(number, line)
-    elif operation == "/": nb /= to_float(number, line)
-    elif operation == "^": nb **= to_float(number, line)
-    elif operation == "%": nb %= to_float(number, line)
-    elif operation == "": nb = to_float(number, line)
-    else: raise syntax_exception(line)
+    if operation == "+":
+        nb += to_float(number, line)
+    elif operation == "-":
+        nb -= to_float(number, line)
+    elif operation == "*":
+        nb *= to_float(number, line)
+    elif operation == "/":
+        nb /= to_float(number, line)
+    elif operation == "^":
+        nb **= to_float(number, line)
+    elif operation == "%":
+        nb %= to_float(number, line)
+    elif operation == "":
+        nb = to_float(number, line)
+    else:
+        raise syntax_exception(code_line, line)
     return nb

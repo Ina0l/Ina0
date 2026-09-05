@@ -11,9 +11,9 @@ while: bit <= 10
     random: random_bit
     if: random_bit
         nb: number_to_guess = number_to_guess + (2 ^ bit)
-    endif
+    end_if
     nb: bit = bit + 1
-endwhile
+end_while
 
 // Ensure the number is within the range 1-100
 nb: number_to_guess = number_to_guess % 100 + 1
@@ -31,15 +31,15 @@ while: not guessed_correctly
     bool: guessed_correctly = guess == number_to_guess
     if: guessed_correctly
         out: "Congrats ! You guessed the number in " + attempts + " tries."
-    endif
+    end_if
     if: not guessed_correctly
         if: guess < number_to_guess
             out: "Too small, try again: "
-        endif
+        end_if
         if: guess > number_to_guess
             out: "Too big, try again: "
-        endif
+        end_if
         input: guess
         nb: guess = guess
-    endif
-endwhile
+    end_if
+end_while

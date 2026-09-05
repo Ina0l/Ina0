@@ -7,6 +7,6 @@ while: a1 or a2
     out: "chicken"
     random: a1
     random: a2
-endwhile
+end_while
 
 out: b + " chicken printed"

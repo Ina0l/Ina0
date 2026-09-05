@@ -4,7 +4,7 @@ def: function <- a, b // Defining a function that takes two parameters a and b
     nb: a = a + 1
     nb: b = b + 1
     return: a * b
-enddef
+end_def
 
 nb: a = 4
 
@@ -15,6 +15,7 @@ out: c
 
 out: a // check if parameter value is still the same outside of the function
 // Check if internally defined variables aren't defined outside of the function
+
 // Should throw an error
 // out: b
 
@@ -26,7 +27,7 @@ def: function2 <- a
     nb: c = a + 6
     nb: d = b*c
     out: d
-enddef
+end_def
 // As you can see this function returns nothing, so you call it like that:
 function2: <- 6
 
@@ -36,16 +37,16 @@ out
 def: factorial <- n
     if: n == 1
         nb: result = 1
-    endif
+    end_if
     if: n != 1
         factorial: a <- n - 1
         nb: result = n * a
-    endif
+    end_if
     return: result
-enddef
+end_def
 
 nb: n = 6
 // Call the recursive factorial function
 factorial: a <- n
 out: "factorial of " + n
-out: a // should be 720 as 6!=720
+out: a // should be 720 as 6! = 720
