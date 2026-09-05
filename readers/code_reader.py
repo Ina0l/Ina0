@@ -4,7 +4,7 @@ from math import floor
 
 from errors import syntax_exception, type_exception, definition_exception
 from memory_variables import _funct, delete_var, set_var, get_var, delete_other_instance, \
-    get_type, no_space, quote_safe_slice, get_soft_typed_var, quote_safe_no_space, _nb, _str
+    get_type, no_space, quote_safe_slice, get_soft_typed_var, quote_safe_no_space
 from readers import nb_reader, str_reader, bool_reader
 
 
