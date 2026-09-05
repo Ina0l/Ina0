@@ -34,10 +34,6 @@ def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Option
         line_nb += 1
         action = no_space(quote_safe_slice(line, ":")[0])
 
-        if action == "quit":
-            terminal_mode = False
-            line_index = len(code)
-
         if action == "end_def":
             funct_def = ""
 
@@ -84,7 +80,11 @@ def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Option
             while_loop_code.append(line)
             continue
 
-        if action == "nb":
+        if action == "quit":
+            terminal_mode = False
+            line_index = len(code)
+
+        elif action == "nb":
             if len(quote_safe_slice(line, ":")) != 2:
                 raise syntax_exception(line, line_nb)
             line = no_space(quote_safe_slice(line, ":")[1])

@@ -4,8 +4,8 @@ import argparse
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--path", required=False, type=str)
+    parser = argparse.ArgumentParser(prog="Ina0", description="Ina0's interpreter")
+    parser.add_argument("--path", "-p", required=False, type=str, help="the path to the file to be executed")
     args = parser.parse_args()
     path = args.path
 
