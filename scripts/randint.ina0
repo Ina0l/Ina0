@@ -1,0 +1,34 @@
+// there's no built-in randint so you need to make one yourself
+// this function hasn't been tested yet
+
+def: randint <- a, b
+    // make sure a < b
+    if: a > b
+        nb: i = a
+        nb: a = b
+        nb: b = i
+    end_if
+
+    nb: gap = b - a
+    nb: exposant = 0
+    while: gap > 2^exposant
+        nb: exposant = exposant + 1
+    end_while
+
+    nb: result = 2^(exposant + 1) + a
+    while: result > b
+        nb: result = a
+        nb: counter = 0
+        while: counter < exposant + 1
+            random: bit
+            if: bit
+                nb: result = result + (2^counter)
+            end_if
+            nb: counter = counter + 1
+        end_while
+    end_while
+    return result
+end_def
+
+randint: number <- 0, 100
+out: number
