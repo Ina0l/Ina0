@@ -1,5 +1,3 @@
-from typing import Union
-
 from memory_variables import _bool, _str, _nb, _list, get_type, get_var, no_space, parentheses_extractor, insert_spaces
 from errors import syntax_exception, definition_exception, type_exception
 from readers import nb_reader, str_reader
@@ -180,8 +178,8 @@ def check_reader(value1: str, operation: str, value2: str, line_nb: int) -> bool
         return param_1 > param_2
 
     elif operation == "in":
-        param_1: Union[float, str, bool, list]
-        param_2: Union[str, list]
+        param_1: float | str | bool | list
+        param_2: str | list
         if get_type(value1, line_nb) == float:
             param_1 = nb_reader.nb_reader(no_space(value1), line_nb)
         elif get_type(value1, line_nb) == str:

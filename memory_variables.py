@@ -1,8 +1,8 @@
-from typing import Dict, List, Tuple, Union, Optional, TypeVar, cast
+from typing import Dict, List, Tuple, Optional, TypeVar, Type, Union
 from errors import definition_exception, syntax_exception, type_exception_with_value
 
 
-_T = TypeVar("_T", float, str, bool, list, Union[list, str])
+_T = TypeVar("_T", float, str, bool, list, Union)
 
 _nb: Dict[str, float] = {}
 _str: Dict[str, str] = {}
@@ -11,7 +11,7 @@ _list: Dict[str, list] = {}
 _funct: Dict[str, Tuple[List[str], Tuple[str, ...], int]] = {}
 """ memory that stores every functions, the dict is {name: function} with function being a tuple with the elements: a list[str] for the arguments, a tuple[str, ...] for the function's body and an int for the starting line number"""
 
-def get_soft_typed_var(string: str, line: int) -> Union[float, str, bool, list]:
+def get_soft_typed_var(string: str, line: int) -> float | str | bool | list:
     if string == "":
         raise syntax_exception(string, line)
     elif string in ("True", "true"):
@@ -29,11 +29,11 @@ def get_soft_typed_var(string: str, line: int) -> Union[float, str, bool, list]:
     else:
         raise definition_exception(string, line)
 
-def get_var(string: str, line: int, expected_type: type[_T]) -> _T:
+def get_var(string: str, line: int, expected_type: Type[_T]) -> _T:
     unchecked = get_soft_typed_var(string, line)
     if not isinstance(unchecked, expected_type):
         raise type_exception_with_value(string, unchecked, expected_type, line)
-    return cast(_T, unchecked)
+    return unchecked
 
 def delete_var(var_name: str) -> None:
     if var_name in _str:
@@ -75,7 +75,7 @@ def delete_other_instance(var_name: str, var_type: type) -> None:
         if var_name in _nb:
             _nb.pop(var_name)
 
-def set_var(var_name: str, value: Union[float, str, bool, list]) -> None:
+def set_var(var_name: str, value: float | str | bool | list) -> None:
     if isinstance(value, float):
         _nb.update({var_name: value})
     if isinstance(value, str):
@@ -85,7 +85,7 @@ def set_var(var_name: str, value: Union[float, str, bool, list]) -> None:
     if isinstance(value, list):
         _list.update({var_name: value})
 
-def get_type(code: str, line: int) -> Optional[type[bool] | type[str] | type[float]]:
+def get_type(code: str, line: int) -> Optional[Type[bool | str | float]]:
     """
     Evaluates an expression's type
     :param code: the expression that's being evaluated

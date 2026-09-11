@@ -1,4 +1,4 @@
-from typing import List, Union, Tuple, Optional
+from typing import List, Tuple, Optional
 from random import getrandbits
 from math import floor
 
@@ -9,8 +9,8 @@ from readers import nb_reader, str_reader, bool_reader
 
 
 def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Optional[Tuple[
-        Union[float, str, bool, list, None],
-        List[Tuple[str, Union[float, str, bool, list, None]]]
+        Optional[float | str | bool | list],
+        List[Tuple[str, Optional[float| str | bool | list]]]
     ]]:
     skip = 0
     opened_if = 0
@@ -19,7 +19,7 @@ def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Option
     while_loop_code = []
     condition = ""
     funct_def = ""
-    locally_set_var: List[Tuple[str, Union[float, str, bool, list, None]]] = []
+    locally_set_var: List[Tuple[str, Optional[float | str | bool | list]]] = []
     line_index = 0
     while line_index < len(code) or terminal_mode:
         if terminal_mode:
@@ -356,11 +356,11 @@ def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Option
                     value = get_var(value_var, line_nb, list)
                 else:
                     raise syntax_exception(value_var, line_nb)
-                if value in get_var(iterable_var, line_nb, Union[list, str]):
-                    set_var(var_name, float(get_var(iterable_var, line_nb, Union[list, str]).index(value)))
+                if value in get_var(iterable_var, line_nb, list | str):
+                    set_var(var_name, float(get_var(iterable_var, line_nb, list | str).index(value)))
                     delete_other_instance(var_name, float)
                 else:
-                    raise ValueError(str(get_var(value_var, line_nb, Union[list, str])) + " not in list at line " + str(line_nb))
+                    raise ValueError(str(get_var(value_var, line_nb, list | str)) + " not in list at line " + str(line_nb))
             else:
                 raise type_exception(iterable_var, list, line_nb)
 
