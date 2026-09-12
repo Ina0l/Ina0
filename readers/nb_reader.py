@@ -1,15 +1,17 @@
-from memory_variables import parentheses_extractor, get_var
+from typing import cast
+
+from memory_variables import parentheses_extractor, get_soft_typed_var, get_type
 from errors import syntax_exception
 
 
 def to_float(string: str, line: int) -> float:
-    try:
-        return float(string)
-    except ValueError as error:
-        if string.strip()[0].isdecimal():
-            raise error
-        return float(get_var(string, line, float))
-
+    if len(string.split(".")) < 3:
+        if len(tuple(filter(lambda char: not (char.isdigit() or char == "."), string))) == 0:
+            return float(string)
+    if not string.strip()[0].isdecimal():
+        if get_type(string, line) in (bool, str, float):
+            return float(cast(float | str | bool, get_soft_typed_var(string, line)))
+    raise syntax_exception(string, line, "invalid syntax for integer")
 
 def nb_reader(code_line: str, line: int) -> float:
     while "(" in code_line:

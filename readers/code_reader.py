@@ -1,17 +1,22 @@
-from typing import List, Tuple, Optional
+from copy import deepcopy
+from typing import List, Tuple, Optional, cast
 from random import getrandbits
 from math import floor
 
-from errors import syntax_exception, type_exception, definition_exception
+from errors import syntax_exception, type_exception, definition_exception, unknown_action_error, \
+    recursive_file_import_error, not_in_list_error, out_of_range_error
 from memory_variables import _funct, delete_var, set_var, get_var, delete_other_instance, \
-    get_type, no_space, quote_safe_slice, get_soft_typed_var, quote_safe_no_space
+    get_type, no_space, quote_safe_slice, get_soft_typed_var, quote_safe_no_space, _nb, _bool, _str, _list, set_contexts
 from readers import nb_reader, str_reader, bool_reader
 
 
-def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Optional[Tuple[
+def code_reader(code: List[str], start_line: int, current_path: str, *, terminal_mode=False, visited_imports: Optional[List[str]] = None) -> Tuple[
         Optional[float | str | bool | list],
-        List[Tuple[str, Optional[float| str | bool | list]]]
-    ]]:
+        List[Tuple[str, Optional[float| str | bool | list]]],
+    ]:
+    if visited_imports is None:
+        visited_imports = []
+    assert visited_imports is not None
     skip = 0
     opened_if = 0
     opened_while = 0
@@ -57,7 +62,7 @@ def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Option
                 opened_while -= 1
                 if opened_while == 0:
                     while bool_reader.bool_reader(condition, line_nb):
-                        code_reader(while_loop_code[1:], line_nb - len(while_loop_code))
+                        code_reader(while_loop_code[1:], line_nb - len(while_loop_code), current_path)
                     while_loop_code = []
 
         if action == "if":
@@ -140,8 +145,11 @@ def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Option
             funct_def = no_space(quote_safe_slice(line, ":")[1].split("<-")[0])
             if "<-" in line:
                 funct_parameters = tuple(no_space(a) for a in quote_safe_slice(quote_safe_slice(line, "<-")[-1], ","))
+                if "" in funct_parameters:
+                    raise syntax_exception(line, line_nb, "invalid argument name")
             else:
                 funct_parameters = ()
+            delete_other_instance(funct_def, "function")
             _funct.update({funct_def: ([], funct_parameters, line_nb)})
 
         elif action == "end_def":
@@ -158,7 +166,7 @@ def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Option
             elif get_type(code, line_nb) == bool:
                 return bool_reader.bool_reader(code, line_nb), locally_set_var
             elif get_type(code, line_nb) == list:
-                return get_var(no_space(code), line_nb, list), locally_set_var
+                return deepcopy(get_var(no_space(code), line_nb, list)), locally_set_var
             else:
                 raise definition_exception(code, line_nb)
 
@@ -284,7 +292,7 @@ def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Option
                 if value in called_list:
                     called_list.remove(value)
                 else:
-                    raise ValueError(parameters[0] + " not in list at line " + str(line_nb))
+                    raise not_in_list_error(parameters[0], line_nb, current_path)
 
         elif action == "get":
             if len(quote_safe_slice(line, ":")) != 2:
@@ -308,7 +316,7 @@ def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Option
                 set_var(var_name, value)
                 delete_other_instance(var_name, type(value))
             else:
-                raise IndexError("index out of range at line "+str(line_nb))
+                raise out_of_range_error(line_nb, current_path)
 
         elif action == "set":
             if len(quote_safe_slice(line, ":")) != 2:
@@ -318,7 +326,7 @@ def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Option
             list_var = get_var(parameters[0], line_nb, list)
             index = nb_reader.nb_reader(no_space(parameters[1]), line_nb)
             if not 0 <= index < len(list_var):
-                raise IndexError("index out of range at line " + str(line_nb))
+                raise out_of_range_error(line_nb, current_path)
 
             if get_type(parameters[2], line_nb) == float:
                 value = nb_reader.nb_reader(no_space(parameters[2]), line_nb)
@@ -360,9 +368,48 @@ def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Option
                     set_var(var_name, float(get_var(iterable_var, line_nb, list | str).index(value)))
                     delete_other_instance(var_name, float)
                 else:
-                    raise ValueError(str(get_var(value_var, line_nb, list | str)) + " not in list at line " + str(line_nb))
+                    raise not_in_list_error(str(get_var(value_var, line_nb, list | str)), line_nb, current_path)
             else:
                 raise type_exception(iterable_var, list, line_nb)
+
+        elif action == "import":
+            if funct_def != "":
+                raise syntax_exception(line, line_nb, "cannot import inside function definition")
+            if len(quote_safe_slice(line, ":")) != 2:
+                raise syntax_exception(line, line_nb)
+            line = quote_safe_slice(line, ":")[1]
+            if len(line.split("<-")) != 2:
+                raise syntax_exception(line, line_nb)
+            import_name, file_name = no_space(line).split("<-")
+            old_nb, old_str, old_bool, old_list, old_funct = _nb.copy(), _str.copy(), _bool.copy(), deepcopy(_list), deepcopy(_funct)
+            alternative_path = "/".join("/".join(current_path.split("\\")).split("/")[:-1]) + "/" + file_name + ".ina0"
+            try:
+                with open(file_name + ".ina0", mode="r") as file:
+                    imported_code = file.read().split("\n")
+                    path = file_name + ".ina0"
+            except FileNotFoundError:
+                with open(alternative_path, mode="r") as file:
+                    imported_code = file.read().split("\n")
+                    path = alternative_path
+            if path in visited_imports:
+                raise recursive_file_import_error(path, line_nb, current_path)
+            callback = code_reader(imported_code, 0, path, visited_imports=visited_imports + [current_path])
+            assert callback is not None
+            if import_name in _funct:
+                imported_value = _funct[import_name]
+            else:
+                imported_value = get_soft_typed_var(import_name, line_nb)
+            assert imported_value is not None
+
+            set_contexts((float, old_nb), (str, old_str), (bool, old_bool), (list, old_list), ("function", old_funct))
+
+            if type(imported_value) in (float, str, bool, list):
+                delete_var(import_name)
+                set_var(import_name, cast(float | str | bool | list, imported_value))
+            else:
+                delete_var(import_name)
+                _funct.update({import_name: cast(Tuple[List[str], Tuple[str, ...], int], imported_value)})
+
 
         elif action in _funct:
             if ":" in line:
@@ -375,7 +422,10 @@ def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Option
                 params_values, var_name = [], None
             function = _funct[action]
             if len(params_values) != len(function[1]):
-                raise syntax_exception(line, line_nb)
+                if len(params_values) < len(function[1]):
+                    raise syntax_exception(line, line_nb, "missing argument(s) " + " ".join(function[1][len(params_values):]))
+                else:
+                    raise syntax_exception(line, line_nb, "too many arguments")
             outside_params = {}
             for param_index in range(len(function[1])):
                 parameter_name = function[1][param_index]
@@ -395,8 +445,7 @@ def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Option
                 elif get_type(params_values[param_index], line_nb) == list:
                     set_var(parameter_name, get_var(no_space(params_values[param_index]), line_nb, list))
                     delete_other_instance(parameter_name, list)
-
-            callback = code_reader(function[0], function[2])
+            callback = code_reader(function[0], function[2], current_path)
             assert callback is not None
 
             for var in callback[1]:
@@ -420,7 +469,10 @@ def code_reader(code: List[str], start_line: int, terminal_mode=False) -> Option
         elif action == "" and not ":" in line:
             pass
         else:
-            raise NameError("action " + action + " unknown")
+            if action != line.strip().split(" ")[0]:
+                raise syntax_exception(line.strip().split(" ")[0], line_nb, "missing ':' after action")
+            else:
+                raise unknown_action_error(action, line_nb, current_path)
     if opened_if != 0:
         raise syntax_exception("", len(code))
     if opened_while != 0:

@@ -13,7 +13,7 @@ if __name__ == "__main__":
         path = input("path: ")
 
     if path == "":
-        code_reader.code_reader([], 0, True)
+        code_reader.code_reader([], 0, path, terminal_mode=True)
     else:
         if (not "." in path) or "" in path.split("."):
             path += ".in"
@@ -23,5 +23,6 @@ if __name__ == "__main__":
         except FileNotFoundError:
             with open("scripts/"+path, "r", encoding="utf-8") as file:
                 code = file.read().split("\n")
+                path = "scripts/"+path
 
-        code_reader.code_reader(code, 0)
+        code_reader.code_reader(code, 0, path)

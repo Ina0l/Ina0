@@ -1,0 +1,5 @@
+nb: constant = 120
+
+def: test
+    out: "test function"
+end_def

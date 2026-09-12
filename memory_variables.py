@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple, Optional, TypeVar, Type, Union
+from typing import Dict, List, Tuple, Optional, TypeVar, Type, Union, cast, Literal
 from errors import definition_exception, syntax_exception, type_exception_with_value
 
 
@@ -29,6 +29,29 @@ def get_soft_typed_var(string: str, line: int) -> float | str | bool | list:
     else:
         raise definition_exception(string, line)
 
+def set_contexts(*new_contexts: Tuple[type | Literal["function"], Dict[str, float | str | bool | list | Tuple[List[str], Tuple[str, ...], int]]]) -> None:
+    """
+    Allows to replace every context by another of the same type. If multiple contexts of the same type are given, only the last one of each type is saved as the new context.
+    :param new_contexts: tuples each containing the type of the context (float, str, bool, list, function) and the new context.
+    """
+    global _nb, _str, _bool, _list, _funct
+    for context in new_contexts:
+        if context[0] == float:
+            _nb.clear()
+            _nb.update(cast(Dict[str, float], context[1]))
+        if context[0] == str:
+            _str.clear()
+            _str.update(cast(Dict[str, str], context[1]))
+        if context[0] == bool:
+            _bool.clear()
+            _bool.update(cast(Dict[str, bool], context[1]))
+        if context[0] == list:
+            _list.clear()
+            _list.update(cast(Dict[str, list], context[1]))
+        if context[0] == "function":
+            _funct.clear()
+            _funct.update(cast(Dict[str, Tuple[List[str], Tuple[str, ...], int]], context[1]))
+
 def get_var(string: str, line: int, expected_type: Type[_T]) -> _T:
     unchecked = get_soft_typed_var(string, line)
     if not isinstance(unchecked, expected_type):
@@ -44,8 +67,10 @@ def delete_var(var_name: str) -> None:
         _bool.pop(var_name)
     if var_name in _list:
         _list.pop(var_name)
+    if var_name in _funct:
+        _funct.pop(var_name)
 
-def delete_other_instance(var_name: str, var_type: type) -> None:
+def delete_other_instance(var_name: str, var_type: type | Literal["function"]) -> None:
     if var_type == float:
         if var_name in _str:
             _str.pop(var_name)
@@ -53,6 +78,8 @@ def delete_other_instance(var_name: str, var_type: type) -> None:
             _bool.pop(var_name)
         if var_name in _list:
             _list.pop(var_name)
+        if var_name in _funct:
+            _funct.pop(var_name)
     if var_type == str:
         if var_name in _nb:
             _nb.pop(var_name)
@@ -60,6 +87,8 @@ def delete_other_instance(var_name: str, var_type: type) -> None:
             _bool.pop(var_name)
         if var_name in _list:
             _list.pop(var_name)
+        if var_name in _funct:
+            _funct.pop(var_name)
     if var_type == bool:
         if var_name in _str:
             _str.pop(var_name)
@@ -67,6 +96,8 @@ def delete_other_instance(var_name: str, var_type: type) -> None:
             _nb.pop(var_name)
         if var_name in _list:
             _list.pop(var_name)
+        if var_name in _funct:
+            _funct.pop(var_name)
     if var_type == list:
         if var_name in _str:
             _str.pop(var_name)
@@ -74,6 +105,17 @@ def delete_other_instance(var_name: str, var_type: type) -> None:
             _bool.pop(var_name)
         if var_name in _nb:
             _nb.pop(var_name)
+        if var_name in _funct:
+            _funct.pop(var_name)
+    if var_type == "function":
+        if var_name in _str:
+            _str.pop(var_name)
+        if var_name in _bool:
+            _bool.pop(var_name)
+        if var_name in _nb:
+            _nb.pop(var_name)
+        if var_name in _list:
+            _list.pop(var_name)
 
 def set_var(var_name: str, value: float | str | bool | list) -> None:
     if isinstance(value, float):
@@ -173,7 +215,7 @@ def parentheses_extractor(code_line: str, line_nb: int) -> Tuple[str, int]:
 
 def quote_safe_slice(string: str, sub: str) -> List[str]:
     """
-    Allows to slice strings just like .slice() but ignore anything between two "
+    Allows to slice strings just like .slice() but ignore anything between two quotes
     :param string: the string to slice
     :param sub: the substring used to slice
     :return: the list containing every part from the original string

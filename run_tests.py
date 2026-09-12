@@ -20,5 +20,5 @@ if __name__ == "__main__":
         print()
         with open(path, "r", encoding="utf-8") as file:
             code = file.read().split("\n")
-        code_reader.code_reader(code, 0)
+        code_reader.code_reader(code, 0, path)
         print("\n\n")
