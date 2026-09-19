@@ -26,3 +26,6 @@ def not_in_list_error(value: float | str | bool | list, line_nb: int, current_pa
 
 def out_of_range_error(line_nb: int, current_path: str) -> IndexError:
     return IndexError(f"index out of range at line {line_nb} in {current_path}")
+
+def keyboard_interrupt(line_nb: int, line: str, current_path: str) -> KeyboardInterrupt:
+    return KeyboardInterrupt(f"{line} at line {line_nb} in {current_path}")

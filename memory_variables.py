@@ -11,6 +11,11 @@ _list: Dict[str, list] = {}
 _funct: Dict[str, Tuple[List[str], Tuple[str, ...], int]] = {}
 """ memory that stores every functions, the dict is {name: function} with function being a tuple with the elements: a list[str] for the arguments, a tuple[str, ...] for the function's body and an int for the starting line number"""
 
+def valid_var_name(var_name: str) -> bool:
+    if var_name[0].isalpha() and len(list(filter(lambda item: not item, [char.isalnum() or char == "_" for char in var_name]))) == 0:
+        return True
+    return False
+
 def get_soft_typed_var(string: str, line: int) -> float | str | bool | list:
     if string == "":
         raise syntax_exception(string, line)
@@ -117,7 +122,9 @@ def delete_other_instance(var_name: str, var_type: type | Literal["function"]) -
         if var_name in _list:
             _list.pop(var_name)
 
-def set_var(var_name: str, value: float | str | bool | list) -> None:
+def set_var(var_name: str, value: float | str | bool | list, line_nb: int) -> None:
+    if not valid_var_name(var_name):
+        raise syntax_exception(var_name, line_nb, error_message="invalid name for variable")
     if isinstance(value, float):
         _nb.update({var_name: value})
     if isinstance(value, str):
@@ -127,16 +134,20 @@ def set_var(var_name: str, value: float | str | bool | list) -> None:
     if isinstance(value, list):
         _list.update({var_name: value})
 
-def get_type(code: str, line: int) -> Optional[Type[bool | str | float]]:
+def get_type(code: str, line: int, expression: Optional[str] = None) -> Optional[Type[bool | str | float]]:
     """
     Evaluates an expression's type
+    :param expression: the expression which is being evaluated, passed in case of error
     :param code: the expression that's being evaluated
     :param line: the line at which this expression is, used to raise errors
     :return: the type of the expression
     :raise: Syntax error when the expression don't have correct syntax
     """
-    if " or " in code or " nor " in code or " and " in code or " nand " in code or " xor " in code or " xnor " in code or "not " in code:
-        for operator in (" or ", " nor ", " and ", " nand ", " xor ", " xnor ", "not "):
+    if expression is None:
+        expression = code
+    assert expression is not None
+    if " or " in code or " nor " in code or " and " in code or " nand " in code or " xor " in code or " xnor " in code or "not " in code or "true" in code or "false" in code:
+        for operator in (" or ", " nor ", " and ", " nand ", " xor ", " xnor ", "not ", "true", "false"):
             if operator in code:
                 indexes = get_indexes(code, operator) + get_indexes(code, "\"")
                 indexes.sort()
@@ -165,9 +176,9 @@ def get_type(code: str, line: int) -> Optional[Type[bool | str | float]]:
         if "-" in code or "*" in code or "/" in code or "^" in code or "%" in code:
             return float
         elif "+" in code:
-            return get_type(code.split("+")[0], line)
+            return get_type(code.split("+")[0], line, expression)
         elif code == "":
-            raise syntax_exception(code, line)
+            raise syntax_exception(expression, line)
         elif code[0].isdigit():
             return float
         else:
@@ -175,7 +186,7 @@ def get_type(code: str, line: int) -> Optional[Type[bool | str | float]]:
 
 def get_indexes(string: str, sub: str) -> List[int]:
     if string.count(sub) == 0:
-        raise ValueError(f"'{sub}' is not in list")
+        return []
     indexes = []
     if string.rindex(sub) == len(string) - len(sub) - 1:
         indexes.append(len(string) - len(sub) - 1)

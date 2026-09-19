@@ -65,7 +65,7 @@ def bool_reader(line: str, line_nb: int) -> bool:
         index = min(indexes)
         arg1 = " ".join(code_line[:index])
         arg2 = " ".join(code_line[index + 1:])
-        return check_reader(arg1, code_line[index], arg2, line_nb)
+        return check_reader(arg1, code_line[index], arg2, line_nb, " ".join(insert_spaces(line).split()))
     elif len(code_line) == 1:
         if code_line[0] in _bool:
             return _bool[code_line[0]]
@@ -80,18 +80,18 @@ def bool_reader(line: str, line_nb: int) -> bool:
     else:
         raise syntax_exception(" ".join(code_line), line_nb)
 
-def check_reader(value1: str, operation: str, value2: str, line_nb: int) -> bool:
+def check_reader(value1: str, operation: str, value2: str, line_nb: int, expression: str) -> bool:
     if operation == "==":
-        if get_type(value1, line_nb) == float:
+        if get_type(value1, line_nb, expression) == float:
             param_1 = nb_reader.nb_reader(no_space(value1), line_nb)
             param_2 = nb_reader.nb_reader(no_space(value2), line_nb)
-        elif get_type(value1, line_nb) == str:
+        elif get_type(value1, line_nb, expression) == str:
             param_1 = str_reader.str_reader(value1, line_nb)
             param_2 = str_reader.str_reader(value2, line_nb)
-        elif get_type(value1, line_nb) == bool:
+        elif get_type(value1, line_nb, expression) == bool:
             param_1 = bool_reader(value1, line_nb)
             param_2 = bool_reader(value2, line_nb)
-        elif get_type(value1, line_nb) == list:
+        elif get_type(value1, line_nb, expression) == list:
             param_1 = get_var(value1, line_nb, list)
             param_2 = get_var(value2, line_nb, list)
         else:
@@ -100,16 +100,16 @@ def check_reader(value1: str, operation: str, value2: str, line_nb: int) -> bool
         return param_1 == param_2
 
     elif operation == "!=":
-        if get_type(value1, line_nb) == float:
+        if get_type(value1, line_nb, expression) == float:
             param_1 = nb_reader.nb_reader(no_space(value1), line_nb)
             param_2 = nb_reader.nb_reader(no_space(value2), line_nb)
-        elif get_type(value1, line_nb) == str:
+        elif get_type(value1, line_nb, expression) == str:
             param_1 = str_reader.str_reader(value1, line_nb)
             param_2 = str_reader.str_reader(value2, line_nb)
-        elif get_type(value1, line_nb) == bool:
+        elif get_type(value1, line_nb, expression) == bool:
             param_1 = bool_reader(value1, line_nb)
             param_2 = bool_reader(value2, line_nb)
-        elif get_type(value1, line_nb) == list:
+        elif get_type(value1, line_nb, expression) == list:
             param_1 = get_var(value1, line_nb, list)
             param_2 = get_var(value2, line_nb, list)
         else:
@@ -118,14 +118,14 @@ def check_reader(value1: str, operation: str, value2: str, line_nb: int) -> bool
         return param_1 != param_2
 
     elif operation == "<=":
-        if get_type(value1, line_nb) == float:
+        if get_type(value1, line_nb, expression) == float:
             param_1 = nb_reader.nb_reader(no_space(value1), line_nb)
             param_2 = nb_reader.nb_reader(no_space(value2), line_nb)
-        elif get_type(value1, line_nb) == str:
+        elif get_type(value1, line_nb, expression) == str:
             raise type_exception(value1, float, line_nb)
-        elif get_type(value1, line_nb) == bool:
+        elif get_type(value1, line_nb, expression) == bool:
             raise type_exception(value1, float, line_nb)
-        elif get_type(value1, line_nb) == list:
+        elif get_type(value1, line_nb, expression) == list:
             raise type_exception(value1, float, line_nb)
         else:
             raise definition_exception(value1, line_nb)
@@ -133,14 +133,14 @@ def check_reader(value1: str, operation: str, value2: str, line_nb: int) -> bool
         return param_1 <= param_2
 
     elif operation == ">=":
-        if get_type(value1, line_nb) == float:
+        if get_type(value1, line_nb, expression) == float:
             param_1 = nb_reader.nb_reader(no_space(value1), line_nb)
             param_2 = nb_reader.nb_reader(no_space(value2), line_nb)
-        elif get_type(value1, line_nb) == str:
+        elif get_type(value1, line_nb, expression) == str:
             raise type_exception(value1, float, line_nb)
-        elif get_type(value1, line_nb) == bool:
+        elif get_type(value1, line_nb, expression) == bool:
             raise type_exception(value1, float, line_nb)
-        elif get_type(value1, line_nb) == list:
+        elif get_type(value1, line_nb, expression) == list:
             raise type_exception(value1, float, line_nb)
         else:
             raise definition_exception(value1, line_nb)
@@ -148,14 +148,14 @@ def check_reader(value1: str, operation: str, value2: str, line_nb: int) -> bool
         return param_1 >= param_2
 
     elif operation == "<":
-        if get_type(value1, line_nb) == float:
+        if get_type(value1, line_nb, expression) == float:
             param_1 = nb_reader.nb_reader(no_space(value1), line_nb)
             param_2 = nb_reader.nb_reader(no_space(value2), line_nb)
-        elif get_type(value1, line_nb) == str:
+        elif get_type(value1, line_nb, expression) == str:
             raise type_exception(value1, float, line_nb)
-        elif get_type(value1, line_nb) == bool:
+        elif get_type(value1, line_nb, expression) == bool:
             raise type_exception(value1, float, line_nb)
-        elif get_type(value1, line_nb) == list:
+        elif get_type(value1, line_nb, expression) == list:
             raise type_exception(value1, float, line_nb)
         else:
             raise definition_exception(value1, line_nb)
@@ -163,14 +163,14 @@ def check_reader(value1: str, operation: str, value2: str, line_nb: int) -> bool
         return param_1 < param_2
 
     elif operation == ">":
-        if get_type(value1, line_nb) == float:
+        if get_type(value1, line_nb, expression) == float:
             param_1 = nb_reader.nb_reader(no_space(value1), line_nb)
             param_2 = nb_reader.nb_reader(no_space(value2), line_nb)
-        elif get_type(value1, line_nb) == str:
+        elif get_type(value1, line_nb, expression) == str:
             raise type_exception(value1, float, line_nb)
-        elif get_type(value1, line_nb) == bool:
+        elif get_type(value1, line_nb, expression) == bool:
             raise type_exception(value1, float, line_nb)
-        elif get_type(value1, line_nb) == list:
+        elif get_type(value1, line_nb, expression) == list:
             raise type_exception(value1, float, line_nb)
         else:
             raise definition_exception(value1, line_nb)
@@ -180,23 +180,23 @@ def check_reader(value1: str, operation: str, value2: str, line_nb: int) -> bool
     elif operation == "in":
         param_1: float | str | bool | list
         param_2: str | list
-        if get_type(value1, line_nb) == float:
+        if get_type(value1, line_nb, expression) == float:
             param_1 = nb_reader.nb_reader(no_space(value1), line_nb)
-        elif get_type(value1, line_nb) == str:
+        elif get_type(value1, line_nb, expression) == str:
             param_1 = str_reader.str_reader(value1, line_nb)
-        elif get_type(value1, line_nb) == bool:
+        elif get_type(value1, line_nb, expression) == bool:
             param_1 = bool_reader(value1, line_nb)
-        elif get_type(value1, line_nb) == list:
+        elif get_type(value1, line_nb, expression) == list:
             param_1 = get_var(value1, line_nb, list)
         else:
             raise definition_exception(value1, line_nb)
 
-        if get_type(value2, line_nb) == str:
+        if get_type(value2, line_nb, expression) == str:
             param_2 = str_reader.str_reader(value2, line_nb)
-        elif get_type(value2, line_nb) == list:
+        elif get_type(value2, line_nb, expression) == list:
             param_2 = get_var(value2, line_nb, list)
         else:
-            if get_type(value2, line_nb) in (float, int, bool):
+            if get_type(value2, line_nb, expression) in (float, int, bool):
                 raise type_exception(value2, "str or list", line_nb)
             else:
                 raise definition_exception(value2, line_nb)
