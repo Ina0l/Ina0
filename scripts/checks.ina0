@@ -1,0 +1,33 @@
+def: is_number <- string
+	make_list: digits
+	append: <- digits, "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"
+	nb: counter = 0
+	len: length <- string
+	bool: decimal = false
+	while: counter <= length - 1
+		get: char <- string, counter
+		if: not (char in digits)
+			if: not char == "."
+				return: false
+			end_if
+			if: decimal
+				return: false
+			end_if
+			bool: decimal = true
+		end_if
+		nb: counter = counter + 1
+	end_while
+	return: true
+end_def
+
+
+is_number: result <- "a"
+out: result
+is_number: result <- "123"
+out: result
+is_number: result <- "1.3"
+out: result
+is_number: result <- "1.3.4"
+out: result
+is_number: result <- "1a"
+out: result
