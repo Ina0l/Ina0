@@ -22,7 +22,7 @@ def bool_operation_handler(bool_1: bool, operation: str, bool_2: bool, line_nb: 
 def bool_reader(line: str, line_nb: int) -> bool:
     while "(" in line:
         line = (line[:line.index("(")] + " " +
-                     str(bool_reader(parentheses_extractor(line, line_nb)[0], line_nb)) +
+                     str(bool_reader(parentheses_extractor(line, line_nb)[0], line_nb)).lower() +
                      " " + line[parentheses_extractor(line, line_nb)[1] + 1:])
 
     code_line = insert_spaces(line).split()
@@ -69,9 +69,9 @@ def bool_reader(line: str, line_nb: int) -> bool:
     elif len(code_line) == 1:
         if code_line[0] in _bool:
             return _bool[code_line[0]]
-        elif code_line[0] in ("False", "false"):
+        elif code_line[0] == "false":
             return False
-        elif code_line [0] in ("True", "true"):
+        elif code_line [0] == "true":
             return True
         elif code_line[0] in _str or code_line[0] in _nb or code_line[0] in _list:
             raise type_exception(code_line[0], bool, line_nb)
