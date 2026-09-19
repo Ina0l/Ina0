@@ -1,3 +1,5 @@
+from typing import Optional
+
 from errors import syntax_exception
 from memory_variables import quote_safe_slice, parentheses_extractor, no_space, get_soft_typed_var, get_type
 
@@ -10,7 +12,7 @@ def str_reader(line: str, line_nb: int) -> str:
                 + " " + line[parentheses_extractor(line, line_nb)[1] + 1:]
         )
 
-    result = None
+    result: Optional[str] = None
     for word in quote_safe_slice(line, "+"):
         if "\"" in word:
             word = " ".join(filter(lambda x: x != "", word.split()))

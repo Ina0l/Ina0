@@ -23,24 +23,24 @@ def nb_reader(code_line: str, line: int) -> float:
 
     number = ""
     operation = ""
-    nb = 0.0
+    result = 0.0
     for char in code_line:
         if not (char.isdigit() or char=="."):
             if char in ("+", "-", "*", "/", "^", "%"):
                 if operation == "+":
-                    nb += to_float(number, line)
+                    result += to_float(number, line)
                 elif operation == "-":
-                    nb -= to_float(number, line)
+                    result -= to_float(number, line)
                 elif operation == "*":
-                    nb *= to_float(number, line)
+                    result *= to_float(number, line)
                 elif operation == "/":
-                    nb /= to_float(number, line)
+                    result /= to_float(number, line)
                 elif operation == "^":
-                    nb **= to_float(number, line)
+                    result **= to_float(number, line)
                 elif operation == "%":
-                    nb %= to_float(number, line)
+                    result %= to_float(number, line)
                 else:
-                    nb = to_float(number, line)
+                    result = to_float(number, line)
                 operation = char
                 number = ""
             else:
@@ -48,19 +48,19 @@ def nb_reader(code_line: str, line: int) -> float:
         else:
             number += char
     if operation == "+":
-        nb += to_float(number, line)
+        result += to_float(number, line)
     elif operation == "-":
-        nb -= to_float(number, line)
+        result -= to_float(number, line)
     elif operation == "*":
-        nb *= to_float(number, line)
+        result *= to_float(number, line)
     elif operation == "/":
-        nb /= to_float(number, line)
+        result /= to_float(number, line)
     elif operation == "^":
-        nb **= to_float(number, line)
+        result **= to_float(number, line)
     elif operation == "%":
-        nb %= to_float(number, line)
+        result %= to_float(number, line)
     elif operation == "":
-        nb = to_float(number, line)
+        result = to_float(number, line)
     else:
         raise syntax_exception(code_line, line)
-    return nb
+    return result
