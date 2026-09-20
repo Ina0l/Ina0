@@ -32,7 +32,7 @@ get: item <- test_list, 0
 out: item
 
 // 0-based index
-index: index <- test_list, "item3"
+get_index: index <- test_list, "item3"
 out: index
 
 set: <- test_list, 0, "item2"

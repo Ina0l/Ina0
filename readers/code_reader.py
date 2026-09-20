@@ -6,7 +6,8 @@ from math import floor
 from errors import syntax_exception, type_exception, definition_exception, unknown_action_error, \
     recursive_file_import_error, not_in_list_error, out_of_range_error, keyboard_interrupt
 from memory_variables import _funct, delete_var, set_var, get_var, delete_other_instance, \
-    get_type, no_space, quote_safe_slice, get_soft_typed_var, quote_safe_no_space, _nb, _bool, _str, _list, set_contexts
+    get_type, no_space, quote_safe_slice, get_soft_typed_var, quote_safe_no_space, _nb, _bool, _str, _list, \
+    set_contexts, valid_var_name, builtin_var_name
 from readers import nb_reader, str_reader, bool_reader
 
 
@@ -147,6 +148,10 @@ def code_reader(code: List[str], start_line: int, current_path: str, *, terminal
                 if len(quote_safe_slice(line, "<-")) > 2:
                     raise syntax_exception(line, line_nb)
                 funct_def = no_space(quote_safe_slice(line, ":")[1].split("<-")[0])
+                if not valid_var_name(funct_def):
+                    raise syntax_exception(funct_def, line_nb, error_message="invalid name for function")
+                if builtin_var_name(funct_def):
+                    raise syntax_exception(funct_def, line_nb, error_message="function name overshadowing builtin name")
                 if "<-" in line:
                     funct_parameters = tuple(no_space(a) for a in quote_safe_slice(quote_safe_slice(line, "<-")[-1], ","))
                     if "" in funct_parameters:
@@ -347,11 +352,11 @@ def code_reader(code: List[str], start_line: int, current_path: str, *, terminal
 
                 list_var[floor(index)] = value
 
-            elif action == "index":
+            elif action == "get_index":
                 if len(quote_safe_slice(line, ":")) != 2:
                     raise syntax_exception(line, line_nb)
                 body = no_space(quote_safe_slice(line, ":")[1])
-                var_name = quote_safe_slice(line, "<-")[0]
+                var_name = quote_safe_slice(body, "<-")[0]
                 if not var_name in [a[0] for a in locally_set_var]:
                     try:
                         locally_set_var.append((var_name, get_soft_typed_var(var_name, line_nb)))

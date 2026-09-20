@@ -16,7 +16,7 @@ def: set_value <- dict, key, value
         append: <- values, value
     end_if
     if: key in keys
-        index: index <- keys, key
+        get_index: index <- keys, key
         set: <- values, index, value
     end_if
 end_def
@@ -24,7 +24,7 @@ end_def
 def: get_value <- dict, key
     get: keys <- dict, 0
     get: values <- dict, 1
-    index: index <- keys, key
+    get_index: index <- keys, key
     get: value <- values, index
     return: value
 end_def

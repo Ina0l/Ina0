@@ -2,6 +2,8 @@ from typing import Dict, List, Tuple, Optional, TypeVar, Type, Union, cast, Lite
 from errors import definition_exception, syntax_exception, type_exception_with_value
 
 
+builtin_functions = ["def", "end_def", "if", "end_if", "while", "end_while", "quit", "nb", "str", "bool", "return", "input", "len", "round", "random", "out", "del", "make_list", "append", "remove", "get", "set", "get_index", "import"]
+
 _T = TypeVar("_T", float, str, bool, list, Union)
 
 _nb: Dict[str, float] = {}
@@ -12,9 +14,11 @@ _funct: Dict[str, Tuple[List[str], Tuple[str, ...], int]] = {}
 """ memory that stores every functions, the dict is {name: function} with function being a tuple with the elements: a list[str] for the arguments, a tuple[str, ...] for the function's body and an int for the starting line number"""
 
 def valid_var_name(var_name: str) -> bool:
-    if var_name[0].isalpha() and len(list(filter(lambda item: not item, [char.isalnum() or char == "_" for char in var_name]))) == 0:
+    if (var_name[0].isalpha() or var_name[0] == '_') and len(list(filter(lambda item: not item, [char.isalnum() or char == "_" for char in var_name]))) == 0:
         return True
     return False
+def builtin_var_name(var_name: str) -> bool:
+    return var_name in builtin_functions
 
 def get_soft_typed_var(string: str, line: int) -> float | str | bool | list:
     if string == "":
@@ -125,6 +129,8 @@ def delete_other_instance(var_name: str, var_type: type | Literal["function"]) -
 def set_var(var_name: str, value: float | str | bool | list, line_nb: int) -> None:
     if not valid_var_name(var_name):
         raise syntax_exception(var_name, line_nb, error_message="invalid name for variable")
+    if builtin_var_name(var_name):
+        raise syntax_exception(var_name, line_nb, error_message="variable name overshadowing builtin name")
     if isinstance(value, float):
         _nb.update({var_name: value})
     if isinstance(value, str):
