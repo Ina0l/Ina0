@@ -1,7 +1,7 @@
 // Test variable assignment
 nb: x = 5
 str: y = "Hello"
-bool: z = True
+bool: z = true
 out: x
 out: y
 out: z

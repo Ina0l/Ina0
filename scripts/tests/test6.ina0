@@ -45,15 +45,15 @@ if: str1 != str2
 end_if
 
 // Test boolean comparisons
-bool: bool1 = True
-bool: bool2 = False
+bool: bool1 = true
+bool: bool2 = false
 
-if: bool1 == True
-    out: "bool1 is True" // Expect this to pass
+if: bool1 == true
+    out: "bool1 is true" // Expect this to pass
 end_if
 
-if: bool2 == False
-    out: "bool2 is False" // Expect this to pass
+if: bool2 == false
+    out: "bool2 is false" // Expect this to pass
 end_if
 
 if: bool1 != bool2
