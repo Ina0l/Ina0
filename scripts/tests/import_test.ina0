@@ -1,4 +1,4 @@
-import: randint <- randint_file
+import: randint <- ../randint_file
 import: constant <- test_constant
 import: test <- test_constant
 
